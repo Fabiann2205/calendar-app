@@ -153,7 +153,57 @@ public class FileDatabase implements Database {
     }
 
     @Override
-    public boolean updateEntry(Entry entry) {
+    public boolean deleteEntry(int id) {
+        List<Entry> entries = new ArrayList<>();
+        boolean found = false;
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(path))) {
+            String line;
+            reader.readLine(); // skip header
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(";");
+                if (!(Integer.parseInt(parts[0]) == id)) {
+                    entries.add(csvToEntry(line));
+                } else {
+                    found = true;
+                }
+            }
+        } catch (IOException e) {
+            logger.log(Level.SEVERE, e.getMessage(), e);
+            return false;
+        }
+
+        if (found) {
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(path))) {
+                Class<Entry> entryClass = Entry.class;
+                Field[] fields = entryClass.getDeclaredFields();
+                StringBuilder header = new StringBuilder();
+                header.append("ID;");
+                for (Field field : fields) {
+                    header.append(field.getName()).append(";");
+                }
+                // Entfernen des letzten Kommas
+                if (!header.isEmpty()) {
+                    header.setLength(header.length() - 1);
+                }
+
+                writer.write(header.toString());
+                writer.newLine();
+                for (Entry e : entries) {
+                    writer.write(entryToCSV(e));
+                    writer.newLine();
+                }
+                return true;
+            } catch (IOException e) {
+                logger.log(Level.SEVERE, e.getMessage(), e);
+                return false;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean updateEntry(int id, Entry entry) {
         List<Entry> entries = new ArrayList<>();
         boolean found = false;
 
@@ -249,8 +299,7 @@ public class FileDatabase implements Database {
     }
 
     private String entryToCSV(Entry entry) {
-        counter++;
-        return counter + ";" + entry.getTitle() + ";" + entry.getDescription() + ";" + entry.getDateAndTime() + ";" + entry.getLocation() + ";" + entry.getCategory() + ";" + entry.getPriority() + ";" + entry.getStatus() + ";" + entry.getNotes();
+        return entry.hashCode() + ";" + entry.getTitle() + ";" + entry.getDescription() + ";" + entry.getDateAndTime() + ";" + entry.getLocation() + ";" + entry.getCategory() + ";" + entry.getPriority() + ";" + entry.getStatus() + ";" + entry.getNotes() + ";" + entry.getCreatedAt();
     }
 
     private Entry csvToEntry(String csv) {

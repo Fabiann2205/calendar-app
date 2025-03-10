@@ -21,6 +21,7 @@ public class Entry {
     private Priority priority;
     private Status status;
     private String notes;
+    private ZonedDateTime createdAt;
 
     /**
      * Constructs a new Entry with the specified title, description, date and time, location, category, priority, status, and notes.
@@ -47,6 +48,22 @@ public class Entry {
         this.priority = priority;
         this.status = status;
         this.notes = notes;
+        this.createdAt = ZonedDateTime.now();
+    }
+
+    public Entry(String title, String description, ZonedDateTime dateAndTime, String location, Category category, Priority priority, Status status, String notes, ZonedDateTime createdAt) {
+        if (title == null || dateAndTime == null) {
+            throw new IllegalArgumentException("Title and dateAndTime must not be null");
+        }
+        this.title = title;
+        this.description = description;
+        this.dateAndTime = dateAndTime;
+        this.location = location;
+        this.category = category;
+        this.priority = priority;
+        this.status = status;
+        this.notes = notes;
+        this.createdAt = createdAt;
     }
 
     /**
@@ -62,6 +79,7 @@ public class Entry {
         }
         this.title = title;
         this.dateAndTime = dateAndTime;
+        this.createdAt = ZonedDateTime.now();
     }
 
     /**
@@ -79,6 +97,7 @@ public class Entry {
         this.title = title;
         this.dateAndTime = dateAndTime;
         this.location = location;
+        this.createdAt = ZonedDateTime.now();
     }
 
     public String getTitle() {
@@ -145,6 +164,14 @@ public class Entry {
         this.notes = notes;
     }
 
+    public ZonedDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(ZonedDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
     @Override
     public String toString() {
         return "Entry{" +
@@ -156,6 +183,7 @@ public class Entry {
                 ", priority=" + priority +
                 ", status=" + status +
                 ", notes='" + notes + '\'' +
+                ", createdAt=" + createdAt +
                 '}';
     }
 
@@ -177,6 +205,7 @@ public class Entry {
         result = 31 * result + Objects.hashCode(getPriority());
         result = 31 * result + Objects.hashCode(getStatus());
         result = 31 * result + Objects.hashCode(getNotes());
+        result = 31 * result + getCreatedAt().hashCode();
         return result;
     }
 }

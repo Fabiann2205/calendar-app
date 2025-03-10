@@ -11,7 +11,9 @@ public interface Database {
 
     boolean deleteEntry(Entry entry);
 
-    boolean updateEntry(Entry entry);
+    boolean deleteEntry(int id);
+
+    boolean updateEntry(int id, Entry entry);
 
     Entry[] listEntries();
 
