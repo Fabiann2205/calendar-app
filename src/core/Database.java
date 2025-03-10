@@ -12,4 +12,6 @@ public interface Database {
     boolean updateEntry(Entry entry);
 
     Entry[] listEntries();
+
+    boolean createTables();
 }
