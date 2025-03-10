@@ -5,6 +5,5 @@ public enum Category {
     PERSONAL,
     SHOPPING,
     OTHER,
-    NONE,
     BLOCKER
 }

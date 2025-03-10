@@ -74,6 +74,32 @@ public class SQLiteDatabase implements Database {
     }
 
     @Override
+    public Entry readEntry(int id) {
+        String sql = "SELECT * FROM entries WHERE id = ?";
+
+        try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, id);
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                return new Entry(
+                        rs.getString("title"),
+                        rs.getString("description"),
+                        ZonedDateTime.parse(rs.getString("dateAndTime")),
+                        rs.getString("location"),
+                        rs.getString("category") != null ? Category.valueOf(rs.getString("category")) : null,
+                        rs.getString("priority") != null ? Priority.valueOf(rs.getString("priority")) : null,
+                        rs.getString("status") != null ? Status.valueOf(rs.getString("status")) : null,
+                        rs.getString("notes")
+                );
+            }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, e.getMessage(), e);
+        }
+        return null;
+    }
+
+    @Override
     public boolean deleteEntry(Entry entry) {
         String sql = "DELETE FROM entries WHERE title = ?";
 
@@ -136,7 +162,8 @@ public class SQLiteDatabase implements Database {
     @Override
     public boolean createTables() {
         String sql = "CREATE TABLE IF NOT EXISTS entries (" +
-                "title TEXT PRIMARY KEY," +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "title TEXT NOT NULL," +
                 "description TEXT," +
                 "dateAndTime TEXT NOT NULL," +
                 "location TEXT," +

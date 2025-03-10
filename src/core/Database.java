@@ -7,6 +7,8 @@ public interface Database {
 
     Entry readEntry(String title);
 
+    Entry readEntry(int id);
+
     boolean deleteEntry(Entry entry);
 
     boolean updateEntry(Entry entry);

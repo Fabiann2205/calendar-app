@@ -18,6 +18,14 @@ public class Core {
 
     public boolean addEntry() {
         this.database.saveEntry(new Entry("test", ZonedDateTime.now()));
+        this.database.saveEntry(new Entry("test2", ZonedDateTime.now()));
+        Entry[] entries = this.database.listEntries();
+        for (Entry entry : entries) {
+            System.out.println(entry.getTitle());
+        }
+        System.out.println(this.database.readEntry("test"));
+        System.out.println(this.database.deleteEntry(this.database.readEntry("test")));
+        System.out.println(this.database.readEntry(3));
         return true;
     }
 
