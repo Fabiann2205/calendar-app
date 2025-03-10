@@ -1,12 +1,11 @@
 import core.Frontend;
-import frontend.FrontendMain;
+import plugins.frontend.FrontendMain;
 
 public class Main {
     public static void main(String[] args) {
-        // Start the frontend
+        // Start the plugins.frontend
         Frontend eins = new FrontendMain();
         eins.initialize("de");
-        eins.setLanguage("en");
-
+        // eins.setLanguage("en");
     }
 }

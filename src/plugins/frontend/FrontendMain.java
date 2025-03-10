@@ -1,4 +1,4 @@
-package frontend;
+package plugins.frontend;
 
 import core.Frontend;
 
@@ -41,9 +41,9 @@ final public class FrontendMain implements Frontend {
     }
 
     /**
-     * Initializes the frontend with the specified language.
+     * Initializes the plugins.frontend with the specified language.
      *
-     * @param language the language to initialize the frontend with
+     * @param language the language to initialize the plugins.frontend with
      */
     @Override
     public void initialize(String language) {
@@ -97,7 +97,7 @@ final public class FrontendMain implements Frontend {
     }
 
     /**
-     * Sets the language for the frontend and updates the GUI components.
+     * Sets the language for the plugins.frontend and updates the GUI components.
      *
      * @param language the new language to set
      */
