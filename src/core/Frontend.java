@@ -1,7 +1,7 @@
 package core;
 
 public interface Frontend {
-    void initialize(String language);
+    // void initialize();
 
     void setLanguage(String language);
 }

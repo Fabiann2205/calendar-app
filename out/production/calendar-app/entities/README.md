@@ -1,3 +1,3 @@
 # Entities
 
-## Schicht 3
+## Schicht 3: Domaincode

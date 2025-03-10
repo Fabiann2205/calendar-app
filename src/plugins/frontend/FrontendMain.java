@@ -36,18 +36,16 @@ final public class FrontendMain implements Frontend {
     /**
      * Default constructor for FrontendMain.
      */
-    public FrontendMain() {
-        // Default constructor
+    public FrontendMain(String language) {
+        this.language = language;
+        this.initialize();
     }
 
     /**
      * Initializes the plugins.frontend with the specified language.
-     *
-     * @param language the language to initialize the plugins.frontend with
      */
-    @Override
-    public void initialize(String language) {
-        this.language = language;
+    // @Override
+    public void initialize() {
         this.translations = loadTranslations("resources/languages/" + language + ".txt");
         this.frame = new JFrame(this.translations.getOrDefault("Title", "Calendar App"));
         this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
