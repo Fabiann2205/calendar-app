@@ -6,3 +6,4 @@ Fri=Freitag
 Sat=Samstag
 Sun=Sonntag
 Today=Heute
+Title=Kalender-App

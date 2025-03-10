@@ -6,3 +6,4 @@ Fri=Friday
 Sat=Saturday
 Sun=Sunday
 Today=Today
+Title=Calendar-App
