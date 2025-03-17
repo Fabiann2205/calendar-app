@@ -259,8 +259,8 @@ public class FileDatabase implements Database {
     public boolean createTables() {
         try {
             Files.createDirectories(databasePath);
-            Files.write(databasePath.resolve("calendars.csv"), Collections.singletonList("uuid,name,description,createdAt"), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
-            Files.write(databasePath.resolve("entries.csv"), Collections.singletonList("uuid,title,description,dateAndTime,location,category,priority,status,notes,createdAt,calendarId"), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+            Files.write(databasePath.resolve("calendars.csv"), Collections.singletonList("uuid,name,description,createdAt"), StandardOpenOption.CREATE);
+            Files.write(databasePath.resolve("entries.csv"), Collections.singletonList("uuid,title,description,dateAndTime,location,category,priority,status,notes,createdAt,calendarId"), StandardOpenOption.CREATE);
             return true;
         } catch (IOException e) {
             logger.severe("Error creating tables: " + e.getMessage());

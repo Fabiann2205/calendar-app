@@ -30,7 +30,7 @@ public class Core {
 
     public boolean removeEntry() {
         Calendar[] calendars = database.listCalendars();
-        Entry[] entries = calendars[0].getEntries();
+        Entry[] entries = calendars[calendars.length - 1].getEntries();
         calendars[0].removeEntry(entries[0]);
         database.updateCalendar(calendars[0].getUuid(), calendars[0]);
         return true;
