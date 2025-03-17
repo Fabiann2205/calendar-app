@@ -1,6 +1,6 @@
 package plugins.database;
 
-import core.Database;
+import core.interfaces.Database;
 import entities.Calendar;
 import entities.Entry;
 import entities.enums.Category;

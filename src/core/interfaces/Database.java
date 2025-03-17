@@ -1,4 +1,4 @@
-package core;
+package core.interfaces;
 
 import entities.Calendar;
 import entities.Entry;

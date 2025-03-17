@@ -1,5 +1,9 @@
 package core;
 
+import core.interfaces.Database;
+import core.interfaces.Frontend;
+import core.interfaces.Observable;
+import core.interfaces.Observer;
 import entities.Calendar;
 import entities.Entry;
 

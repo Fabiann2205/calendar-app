@@ -2,8 +2,8 @@ package plugins.frontend;
 
 import core.CommandExecutor;
 import core.Core;
-import core.Frontend;
-import core.commandrunner.AddEntryCommand;
+import core.commands.AddEntryCommand;
+import core.interfaces.Frontend;
 import entities.Calendar;
 import entities.Entry;
 
@@ -55,7 +55,7 @@ final public class FrontendMain implements Frontend {
         core.addObserver(this);
 
         this.translations = loadTranslations("resources/languages/" + language + ".txt");
-        
+
         this.frame = new JFrame(this.translations.getOrDefault("Title", "Calendar App"));
         this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.frame.setSize(700, 400);

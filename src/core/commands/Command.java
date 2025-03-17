@@ -1,4 +1,4 @@
-package core.commandrunner;
+package core.commands;
 
 import core.Core;
 

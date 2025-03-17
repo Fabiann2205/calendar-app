@@ -1,6 +1,6 @@
 package core;
 
-import core.commandrunner.Command;
+import core.commands.Command;
 
 import java.util.ArrayList;
 import java.util.List;
