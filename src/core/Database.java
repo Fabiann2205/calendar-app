@@ -1,21 +1,34 @@
 package core;
 
+import entities.Calendar;
 import entities.Entry;
 
+import java.util.UUID;
+
 public interface Database {
-    boolean saveEntry(Entry entry);
+    boolean save(Calendar calendar);
 
-    Entry readEntry(String title);
+    boolean save(Entry entry, UUID calendarId);
 
-    Entry readEntry(int id);
+    Entry readEntry(UUID id);
+
+    Calendar readCalendar(UUID id);
 
     boolean deleteEntry(Entry entry);
 
-    boolean deleteEntry(int id);
+    boolean deleteCalendar(Calendar calendar);
 
-    boolean updateEntry(int id, Entry entry);
+    boolean deleteEntry(UUID id);
+
+    boolean deleteCalendar(UUID id);
+
+    boolean updateEntry(UUID id, Entry entry);
+
+    boolean updateCalendar(UUID id, Calendar calendar);
 
     Entry[] listEntries();
+
+    Calendar[] listCalendars();
 
     boolean createTables();
 }

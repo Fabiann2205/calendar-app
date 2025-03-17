@@ -6,6 +6,7 @@ import entities.enums.Status;
 
 import java.time.ZonedDateTime;
 import java.util.Objects;
+import java.util.UUID;
 
 /**
  * Represents an entry with a title, description, date and time, location, category, priority, status, and notes.
@@ -13,6 +14,7 @@ import java.util.Objects;
  * The `title` and `dateAndTime` fields must not be null.
  */
 public class Entry {
+    private final UUID uuid;
     private String title;
     private String description;
     private ZonedDateTime dateAndTime;
@@ -21,7 +23,7 @@ public class Entry {
     private Priority priority;
     private Status status;
     private String notes;
-    private ZonedDateTime createdAt;
+    private final ZonedDateTime createdAt;
 
     /**
      * Constructs a new Entry with the specified title, description, date and time, location, category, priority, status, and notes.
@@ -40,6 +42,7 @@ public class Entry {
         if (title == null || dateAndTime == null) {
             throw new IllegalArgumentException("Title and dateAndTime must not be null");
         }
+        this.uuid = UUID.randomUUID();
         this.title = title;
         this.description = description;
         this.dateAndTime = dateAndTime;
@@ -51,10 +54,11 @@ public class Entry {
         this.createdAt = ZonedDateTime.now();
     }
 
-    public Entry(String title, String description, ZonedDateTime dateAndTime, String location, Category category, Priority priority, Status status, String notes, ZonedDateTime createdAt) {
+    public Entry(UUID uuid, String title, String description, ZonedDateTime dateAndTime, String location, Category category, Priority priority, Status status, String notes, ZonedDateTime createdAt) {
         if (title == null || dateAndTime == null) {
             throw new IllegalArgumentException("Title and dateAndTime must not be null");
         }
+        this.uuid = uuid;
         this.title = title;
         this.description = description;
         this.dateAndTime = dateAndTime;
@@ -77,6 +81,7 @@ public class Entry {
         if (title == null || dateAndTime == null) {
             throw new IllegalArgumentException("Title and dateAndTime must not be null");
         }
+        this.uuid = UUID.randomUUID();
         this.title = title;
         this.dateAndTime = dateAndTime;
         this.createdAt = ZonedDateTime.now();
@@ -94,6 +99,7 @@ public class Entry {
         if (title == null || dateAndTime == null) {
             throw new IllegalArgumentException("Title and dateAndTime must not be null");
         }
+        this.uuid = UUID.randomUUID();
         this.title = title;
         this.dateAndTime = dateAndTime;
         this.location = location;
@@ -102,6 +108,10 @@ public class Entry {
 
     public String getTitle() {
         return title;
+    }
+
+    public UUID getUuid() {
+        return uuid;
     }
 
     public void setTitle(String title) {
@@ -166,10 +176,6 @@ public class Entry {
 
     public ZonedDateTime getCreatedAt() {
         return createdAt;
-    }
-
-    public void setCreatedAt(ZonedDateTime createdAt) {
-        this.createdAt = createdAt;
     }
 
     @Override

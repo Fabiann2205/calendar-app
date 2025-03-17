@@ -1,5 +1,6 @@
 package core;
 
+import entities.Calendar;
 import entities.Entry;
 
 import java.time.ZonedDateTime;
@@ -17,20 +18,21 @@ public class Core {
     }
 
     public boolean addEntry() {
-        Entry entry1 = new Entry("test", ZonedDateTime.now());
-        this.database.saveEntry(entry1);
-        this.database.saveEntry(new Entry("test2", ZonedDateTime.now()));
-        Entry[] entries = this.database.listEntries();
-        for (Entry entry : entries) {
-            System.out.println(entry.getTitle());
-        }
-        System.out.println(this.database.readEntry("test"));
-        System.out.println(this.database.deleteEntry(entry1.hashCode()));
-        System.out.println(this.database.readEntry(3));
+        Calendar calendar = new Calendar("My Calendar", "This is my calendar");
+        Entry entry = new Entry("My Entry", "This is my entry", ZonedDateTime.now(), "My Location", null, null, null, "These are my notes");
+        Entry entry1 = new Entry("My Entry1", "This is my entry1", ZonedDateTime.now(), "My Location1", null, null, null, "These are my notes1");
+        calendar.addEntry(entry);
+        calendar.addEntry(entry1);
+        database.save(calendar);
+        database.save(calendar);
         return true;
     }
 
     public boolean removeEntry() {
+        Calendar[] calendars = database.listCalendars();
+        Entry[] entries = calendars[0].getEntries();
+        calendars[0].removeEntry(entries[0]);
+        database.updateCalendar(calendars[0].getUuid(), calendars[0]);
         return true;
     }
 
