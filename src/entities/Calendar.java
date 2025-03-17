@@ -131,12 +131,13 @@ public class Calendar {
         if (o == null || getClass() != o.getClass()) return false;
 
         Calendar calendar = (Calendar) o;
-        return Objects.equals(getName(), calendar.getName()) && Objects.equals(getDescription(), calendar.getDescription()) && Arrays.equals(getEntries(), calendar.getEntries()) && Objects.equals(getCreatedAt(), calendar.getCreatedAt());
+        return Objects.equals(getUuid(), calendar.getUuid()) && Objects.equals(getName(), calendar.getName()) && Objects.equals(getDescription(), calendar.getDescription()) && Arrays.equals(getEntries(), calendar.getEntries()) && Objects.equals(getCreatedAt(), calendar.getCreatedAt());
     }
 
     @Override
     public int hashCode() {
-        int result = Objects.hashCode(getName());
+        int result = Objects.hashCode(getUuid());
+        result = 31 * result + Objects.hashCode(getName());
         result = 31 * result + Objects.hashCode(getDescription());
         result = 31 * result + Arrays.hashCode(getEntries());
         result = 31 * result + Objects.hashCode(getCreatedAt());

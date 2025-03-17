@@ -198,20 +198,21 @@ public class Entry {
         if (o == null || getClass() != o.getClass()) return false;
 
         Entry entry = (Entry) o;
-        return getTitle().equals(entry.getTitle()) && Objects.equals(getDescription(), entry.getDescription()) && getDateAndTime().equals(entry.getDateAndTime()) && Objects.equals(getLocation(), entry.getLocation()) && getCategory() == entry.getCategory() && getPriority() == entry.getPriority() && getStatus() == entry.getStatus() && Objects.equals(getNotes(), entry.getNotes());
+        return Objects.equals(getUuid(), entry.getUuid()) && Objects.equals(getTitle(), entry.getTitle()) && Objects.equals(getDescription(), entry.getDescription()) && Objects.equals(getDateAndTime(), entry.getDateAndTime()) && Objects.equals(getLocation(), entry.getLocation()) && getCategory() == entry.getCategory() && getPriority() == entry.getPriority() && getStatus() == entry.getStatus() && Objects.equals(getNotes(), entry.getNotes()) && Objects.equals(getCreatedAt(), entry.getCreatedAt());
     }
 
     @Override
     public int hashCode() {
-        int result = getTitle().hashCode();
+        int result = Objects.hashCode(getUuid());
+        result = 31 * result + Objects.hashCode(getTitle());
         result = 31 * result + Objects.hashCode(getDescription());
-        result = 31 * result + getDateAndTime().hashCode();
+        result = 31 * result + Objects.hashCode(getDateAndTime());
         result = 31 * result + Objects.hashCode(getLocation());
         result = 31 * result + Objects.hashCode(getCategory());
         result = 31 * result + Objects.hashCode(getPriority());
         result = 31 * result + Objects.hashCode(getStatus());
         result = 31 * result + Objects.hashCode(getNotes());
-        result = 31 * result + getCreatedAt().hashCode();
+        result = 31 * result + Objects.hashCode(getCreatedAt());
         return result;
     }
 }

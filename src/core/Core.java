@@ -3,36 +3,48 @@ package core;
 import entities.Calendar;
 import entities.Entry;
 
-import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.UUID;
 import java.util.logging.Logger;
 
-public class Core {
+public class Core implements Observable {
     private static final Logger logger = Logger.getLogger(Core.class.getName());
     private final Database database;
     private final Frontend frontend;
+    private final CommandExecutor commandExecutor;
+    private final List<Observer> observers = new ArrayList<>();
+
+    private List<Calendar> calendars;
 
     public Core(Database database, Frontend frontend) {
         this.database = database;
         this.frontend = frontend;
+        this.commandExecutor = new CommandExecutor(this);
+        this.frontend.initialize(this.commandExecutor, this);
         this.database.createTables();
+        this.calendars = new ArrayList<>(Arrays.asList(this.database.listCalendars()));
+
+        // For Testing
+        this.calendars.add(new Calendar("Test Calendar", "Test Description"));
+        this.database.save(this.calendars.getFirst());
+        notifyObservers();
     }
 
-    public boolean addEntry() {
-        Calendar calendar = new Calendar("My Calendar", "This is my calendar");
-        Entry entry = new Entry("My Entry", "This is my entry", ZonedDateTime.now(), "My Location", null, null, null, "These are my notes");
-        Entry entry1 = new Entry("My Entry1", "This is my entry1", ZonedDateTime.now(), "My Location1", null, null, null, "These are my notes1");
-        calendar.addEntry(entry);
-        calendar.addEntry(entry1);
-        database.save(calendar);
-        database.save(calendar);
-        return true;
+    public boolean addEntry(Entry entry, UUID calendarId) {
+        for (Calendar calendar : calendars) {
+            if (calendar.getUuid().equals(calendarId)) {
+                calendar.addEntry(entry);
+                database.save(calendar);
+                notifyObservers();
+                return true;
+            }
+        }
+        return false;
     }
 
     public boolean removeEntry() {
-        Calendar[] calendars = database.listCalendars();
-        Entry[] entries = calendars[calendars.length - 1].getEntries();
-        calendars[0].removeEntry(entries[0]);
-        database.updateCalendar(calendars[0].getUuid(), calendars[0]);
         return true;
     }
 
@@ -58,5 +70,23 @@ public class Core {
 
     public boolean viewEntriesByStatus() {
         return true;
+    }
+
+    @Override
+    public void addObserver(Observer observer) {
+        this.observers.add(observer);
+    }
+
+    @Override
+    public void removeObserver(Observer observer) {
+        this.observers.remove(observer);
+    }
+
+    @Override
+    public void notifyObservers() {
+        Calendar[] current_calendars = this.database.listCalendars();
+        for (Observer observer : this.observers) {
+            observer.update(current_calendars);
+        }
     }
 }

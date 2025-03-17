@@ -1,6 +1,11 @@
 package plugins.frontend;
 
+import core.CommandExecutor;
+import core.Core;
 import core.Frontend;
+import core.commandrunner.AddEntryCommand;
+import entities.Calendar;
+import entities.Entry;
 
 import javax.swing.*;
 import java.awt.*;
@@ -8,11 +13,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDate;
+import java.time.ZonedDateTime;
 import java.time.format.TextStyle;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -26,6 +30,8 @@ final public class FrontendMain implements Frontend {
     private static LocalDate currentDate = LocalDate.now();
     private Map<String, String> translations;
     private String language;
+    private List<Calendar> calendars;
+    private CommandExecutor commandExecutor;
 
     // GUI components
     private JFrame frame;
@@ -38,15 +44,18 @@ final public class FrontendMain implements Frontend {
      */
     public FrontendMain(String language) {
         this.language = language;
-        this.initialize();
     }
 
     /**
      * Initializes the plugins.frontend with the specified language.
      */
     // @Override
-    public void initialize() {
+    public void initialize(CommandExecutor commandExecutor, Core core) {
+        this.commandExecutor = commandExecutor;
+        core.addObserver(this);
+
         this.translations = loadTranslations("resources/languages/" + language + ".txt");
+        
         this.frame = new JFrame(this.translations.getOrDefault("Title", "Calendar App"));
         this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.frame.setSize(700, 400);
@@ -65,6 +74,15 @@ final public class FrontendMain implements Frontend {
         headerPanel.add(this.monthLabel);
         headerPanel.add(this.todayButton);
         headerPanel.add(nextButton);
+
+        // TESTING ENTRIES
+        JButton testButton = new JButton("Test");
+        testButton.addActionListener(e -> {
+            System.out.println("Test");
+            this.commandExecutor.addCommand(new AddEntryCommand(new Entry("Testeintrag", ZonedDateTime.now()), this.calendars.getLast().getUuid()));
+            this.commandExecutor.executeCommands();
+        });
+        headerPanel.add(testButton);
 
         panel.add(headerPanel, BorderLayout.NORTH);
 
@@ -183,5 +201,18 @@ final public class FrontendMain implements Frontend {
             logger.log(Level.SEVERE, "Failed to load translations", e);
         }
         return translations;
+    }
+
+    @Override
+    public void update(Calendar[] calendars) {
+        this.calendars = new ArrayList<>(Arrays.asList(calendars));
+        updateCalendar(this.calendarPanel);
+
+        // show popup with entries
+        for (Calendar calendar : calendars) {
+            for (Entry entry : calendar.getEntries()) {
+                logger.log(Level.INFO, entry.toString());
+            }
+        }
     }
 }
