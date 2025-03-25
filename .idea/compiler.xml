@@ -6,7 +6,11 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="calendar-app" />
+        <module name="adapters" />
+        <module name="application" />
+        <module name="runner" />
+        <module name="plugins" />
+        <module name="domain" />
       </profile>
     </annotationProcessing>
   </component>
