@@ -29,9 +29,9 @@ public class Core implements Observable {
         this.calendars = new ArrayList<>(Arrays.asList(this.database.listCalendars()));
 
         // For Testing
-        this.calendars.add(new Calendar("Test Calendar", "Test Description"));
-        this.database.save(this.calendars.getFirst());
-        notifyObservers();
+        // this.calendars.add(new Calendar("Test Calendar", "Test Description"));
+        // this.database.save(this.calendars.getFirst());
+        // notifyObservers();
     }
 
     public boolean addEntry(Entry entry, UUID calendarId) {
@@ -46,32 +46,48 @@ public class Core implements Observable {
         return false;
     }
 
-    public boolean removeEntry() {
-        return true;
+    public boolean removeEntry(Entry entry, UUID calendarId) {
+        for (Calendar calendar : calendars) {
+            if (calendar.getUuid().equals(calendarId)) {
+                if (calendar.removeEntry(entry)) {
+                    database.save(calendar);
+                    notifyObservers();
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
-    public boolean editEntry() {
-        return true;
+    public boolean editEntry(Entry entry, UUID calendarId) {
+        for (Calendar calendar : calendars) {
+            if (calendar.getUuid().equals(calendarId)) {
+                if (calendar.updateEntry(entry)) {
+                    database.save(calendar);
+                    notifyObservers();
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
-    public boolean viewEntry() {
-        return true;
+    public Entry viewEntry(UUID entryId, UUID calendarId) {
+        for (Calendar calendar : calendars) {
+            if (calendar.getUuid().equals(calendarId)) {
+                return calendar.getEntry(entryId);
+            }
+        }
+        return null;
     }
 
-    public boolean viewAllEntries() {
-        return true;
-    }
-
-    public boolean viewEntriesByCategory() {
-        return true;
-    }
-
-    public boolean viewEntriesByPriority() {
-        return true;
-    }
-
-    public boolean viewEntriesByStatus() {
-        return true;
+    public Entry[] viewAllEntries(UUID calendarId) {
+        for (Calendar calendar : calendars) {
+            if (calendar.getUuid().equals(calendarId)) {
+                return calendar.getEntries();
+            }
+        }
+        return new Entry[0];
     }
 
     @Override

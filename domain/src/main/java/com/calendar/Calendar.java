@@ -88,13 +88,6 @@ public class Calendar {
         return false;
     }
 
-    public boolean removeEntry(int index) {
-        if (entries == null || index < 0 || index >= entries.length) {
-            return false;
-        }
-        return copyArray(index);
-    }
-
     private boolean copyArray(int index) {
         Entry[] newEntries = new Entry[entries.length - 1];
         System.arraycopy(entries, 0, newEntries, 0, index);
@@ -103,19 +96,30 @@ public class Calendar {
         return true;
     }
 
-    public boolean updateEntry(int index, Entry entry) {
-        if (entries == null || index < 0 || index >= entries.length) {
+    public boolean updateEntry(Entry entry) {
+        if (entries == null || entry.getUuid() == null) {
             return false;
         }
-        entries[index] = entry;
-        return true;
+
+        for (int i = 0; i < entries.length; i++) {
+            if (entries[i].getUuid().equals(entry.getUuid())) {
+                entries[i] = entry;
+                return true;
+            }
+        }
+        return false;
     }
 
-    public Entry getEntry(int index) {
-        if (entries == null || index < 0 || index >= entries.length) {
+    public Entry getEntry(UUID entryId) {
+        if (entries == null || entryId == null) {
             return null;
         }
-        return entries[index];
+        for (Entry entry : entries) {
+            if (entry.getUuid().equals(entryId)) {
+                return entry;
+            }
+        }
+        return null;
     }
 
     public int getEntryCount() {
@@ -131,7 +135,7 @@ public class Calendar {
         if (o == null || getClass() != o.getClass()) return false;
 
         Calendar calendar = (Calendar) o;
-        return Objects.equals(getUuid(), calendar.getUuid()) && Objects.equals(getName(), calendar.getName()) && Objects.equals(getDescription(), calendar.getDescription()) && Arrays.equals(getEntries(), calendar.getEntries()) && Objects.equals(getCreatedAt(), calendar.getCreatedAt());
+        return getUuid().equals(calendar.getUuid());
     }
 
     @Override

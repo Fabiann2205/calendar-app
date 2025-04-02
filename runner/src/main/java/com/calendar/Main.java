@@ -14,7 +14,5 @@ public class Main {
 
         // use file as database !!! Currently doesnt read entries?! !!! NOT RECOMMENDED!
         // Core core = new Core(new FileDatabase("resources/filedb"), new FrontendMain("de"));
-
-        System.out.println("test");
     }
 }

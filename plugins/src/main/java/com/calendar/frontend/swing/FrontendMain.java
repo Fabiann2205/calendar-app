@@ -4,7 +4,6 @@ import com.calendar.Calendar;
 import com.calendar.CommandExecutor;
 import com.calendar.Core;
 import com.calendar.Entry;
-import com.calendar.commands.AddEntryCommand;
 import com.calendar.frontend.swing.languages.Translation;
 import com.calendar.frontend.swing.languages.de;
 import com.calendar.frontend.swing.languages.en;
@@ -13,7 +12,6 @@ import com.calendar.interfaces.Frontend;
 import javax.swing.*;
 import java.awt.*;
 import java.time.LocalDate;
-import java.time.ZonedDateTime;
 import java.time.format.TextStyle;
 import java.util.*;
 import java.util.List;
@@ -53,9 +51,6 @@ final public class FrontendMain implements Frontend {
     public void initialize(CommandExecutor commandExecutor, Core core) {
         this.commandExecutor = commandExecutor;
         core.addObserver(this);
-        // print the current working directory
-        System.out.println("Current working directory: " + System.getProperty("user.dir"));
-
 
         this.translations = loadTranslations();
 
@@ -77,15 +72,6 @@ final public class FrontendMain implements Frontend {
         headerPanel.add(this.monthLabel);
         headerPanel.add(this.todayButton);
         headerPanel.add(nextButton);
-
-        // TESTING ENTRIES
-        JButton testButton = new JButton("Test");
-        testButton.addActionListener(e -> {
-            System.out.println("Test");
-            this.commandExecutor.addCommand(new AddEntryCommand(new Entry("Testeintrag", ZonedDateTime.now()), this.calendars.getLast().getUuid()));
-            this.commandExecutor.executeCommands();
-        });
-        headerPanel.add(testButton);
 
         panel.add(headerPanel, BorderLayout.NORTH);
 

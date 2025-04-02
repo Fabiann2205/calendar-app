@@ -198,7 +198,7 @@ public class Entry {
         if (o == null || getClass() != o.getClass()) return false;
 
         Entry entry = (Entry) o;
-        return Objects.equals(getUuid(), entry.getUuid()) && Objects.equals(getTitle(), entry.getTitle()) && Objects.equals(getDescription(), entry.getDescription()) && Objects.equals(getDateAndTime(), entry.getDateAndTime()) && Objects.equals(getLocation(), entry.getLocation()) && getCategory() == entry.getCategory() && getPriority() == entry.getPriority() && getStatus() == entry.getStatus() && Objects.equals(getNotes(), entry.getNotes()) && Objects.equals(getCreatedAt(), entry.getCreatedAt());
+        return getUuid().equals(entry.getUuid());
     }
 
     @Override
