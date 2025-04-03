@@ -4,6 +4,9 @@ import com.calendar.Calendar;
 import com.calendar.CommandExecutor;
 import com.calendar.Core;
 import com.calendar.Entry;
+import com.calendar.commands.AddEntryCommand;
+import com.calendar.commands.DeleteEntryCommand;
+import com.calendar.commands.EditEntryCommand;
 import com.calendar.frontend.swing.languages.Translation;
 import com.calendar.frontend.swing.languages.de;
 import com.calendar.frontend.swing.languages.en;
@@ -12,6 +15,7 @@ import com.calendar.interfaces.Frontend;
 import javax.swing.*;
 import java.awt.*;
 import java.time.LocalDate;
+import java.time.ZonedDateTime;
 import java.time.format.TextStyle;
 import java.util.*;
 import java.util.List;
@@ -103,6 +107,21 @@ final public class FrontendMain implements Frontend {
         buttonPanel.add(editButton);
         buttonPanel.add(deleteButton);
 
+        createButton.addActionListener(e -> showEntryPopup("Erstellen", null));
+        editButton.addActionListener(e -> {
+            Entry selectedEntry = getSelectedEntry();
+            if (selectedEntry != null) {
+                showEntryPopup("Bearbeiten", selectedEntry);
+            }
+        });
+        deleteButton.addActionListener(e -> {
+            Entry selectedEntry = getSelectedEntry();
+            if (selectedEntry != null) {
+                showDeleteConfirmationPopup(selectedEntry);
+            }
+            this.commandExecutor.executeCommands();
+        });
+
         panel.add(scrollPane);
         panel.add(buttonPanel);
 
@@ -126,6 +145,115 @@ final public class FrontendMain implements Frontend {
 
         this.frame.add(panel);
         this.frame.setVisible(true);
+    }
+
+
+    private void showDeleteConfirmationPopup(Entry entry) {
+        JDialog dialog = new JDialog(frame, "Löschen", true);
+        dialog.setSize(300, 150);
+        dialog.setLayout(new BorderLayout());
+
+        JPanel messagePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        messagePanel.add(new JLabel("Sicher, dass du den Eintrag löschen willst?"));
+
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        JButton deleteButton = new JButton("Löschen");
+        JButton cancelButton = new JButton("Abbrechen");
+
+        deleteButton.addActionListener(e -> {
+            UUID calendarId = getCalendarIdForEntry(entry);
+            if (calendarId != null) {
+                this.commandExecutor.addCommand(new DeleteEntryCommand(entry, calendarId));
+            }
+            dialog.dispose();
+        });
+
+        cancelButton.addActionListener(e -> dialog.dispose());
+
+        buttonPanel.add(deleteButton);
+        buttonPanel.add(cancelButton);
+
+        dialog.add(messagePanel, BorderLayout.CENTER);
+        dialog.add(buttonPanel, BorderLayout.SOUTH);
+        dialog.setVisible(true);
+    }
+
+    private Entry getSelectedEntry() {
+        for (JCheckBox checkBox : entryCheckBoxes) {
+            if (checkBox.isSelected()) {
+                String entryText = checkBox.getText();
+                for (Calendar calendar : calendars) {
+                    for (Entry entry : calendar.getEntries()) {
+                        if (entry.toString().equals(entryText)) {
+                            return entry;
+                        }
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    private void showEntryPopup(String action, Entry entry) {
+        JDialog dialog = new JDialog(frame, action, true);
+        dialog.setSize(300, 200);
+        dialog.setLayout(new BorderLayout());
+
+        JPanel entryPanel = new JPanel(new GridLayout(0, 1));
+        JTextField titleField = new JTextField(entry != null ? entry.getTitle() : "");
+        JTextField dateField = new JTextField(entry != null ? entry.getDateAndTime().toString() : ZonedDateTime.now().toString());
+        entryPanel.add(new JLabel("Titel:"));
+        entryPanel.add(titleField);
+        entryPanel.add(new JLabel("Datum:"));
+        entryPanel.add(dateField);
+
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        JButton saveButton = new JButton("Speichern");
+        JButton cancelButton = new JButton("Abbrechen");
+
+        saveButton.addActionListener(e -> {
+            switch (action) {
+                case "Erstellen" -> {
+                    UUID calendarId = this.calendars.getFirst().getUuid();
+                    Entry newEntry = new Entry(titleField.getText(), ZonedDateTime.parse(dateField.getText()));
+                    commandExecutor.addCommand(new AddEntryCommand(newEntry, calendarId));
+                    commandExecutor.executeCommands();
+                }
+                case "Bearbeiten" -> {
+                    UUID calendarId = getCalendarIdForEntry(entry);
+                    if (calendarId != null) {
+                        entry.setTitle(titleField.getText());
+                        entry.setDateAndTime(ZonedDateTime.parse(dateField.getText()));
+                        commandExecutor.addCommand(new EditEntryCommand(entry, calendarId));
+                        commandExecutor.executeCommands();
+                    }
+                }
+            }
+            dialog.dispose();
+        });
+
+        cancelButton.addActionListener(e -> dialog.dispose());
+
+        buttonPanel.add(saveButton);
+        buttonPanel.add(cancelButton);
+
+        dialog.add(entryPanel, BorderLayout.CENTER);
+        dialog.add(buttonPanel, BorderLayout.SOUTH);
+        dialog.setVisible(true);
+    }
+
+    private UUID getCalendarIdForEntry(Entry entry) {
+        if (entry == null) {
+            return null;
+        }
+        for (Calendar calendar : this.calendars) {
+            for (Entry e : calendar.getEntries()) {
+                if (e.equals(entry)) {
+                    return calendar.getUuid();
+                }
+            }
+        }
+        return null;
     }
 
     private void showEntriesForDay(int day) {
