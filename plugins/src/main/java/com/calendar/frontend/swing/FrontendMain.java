@@ -36,6 +36,14 @@ final public class FrontendMain implements Frontend {
     private JButton todayButton;
     private JLabel monthLabel;
     private JPanel calendarPanel;
+    private JTextArea entryTextArea;
+    private JPanel entryPanel;
+
+    private JButton createButton;
+    private JButton editButton;
+    private JButton deleteButton;
+
+    private List<JCheckBox> entryCheckBoxes;
 
     /**
      * Default constructor for FrontendMain.
@@ -56,10 +64,10 @@ final public class FrontendMain implements Frontend {
 
         this.frame = new JFrame(this.translations.getOrDefault("Title", "Calendar App"));
         this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.frame.setSize(700, 400);
+        this.frame.setSize(700, 500); // Höhe erhöht, um Platz für das Textfeld zu schaffen
 
         JPanel panel = new JPanel();
-        panel.setLayout(new BorderLayout());
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
         JPanel headerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         JButton prevButton = new JButton("<");
@@ -73,13 +81,32 @@ final public class FrontendMain implements Frontend {
         headerPanel.add(this.todayButton);
         headerPanel.add(nextButton);
 
-        panel.add(headerPanel, BorderLayout.NORTH);
+        panel.add(headerPanel);
 
         calendarPanel = new JPanel();
-        calendarPanel.setLayout(new GridLayout(7, 7)); // 7 days per week, 7 rows (1 for the month, 1 for the weekdays)
-        panel.add(calendarPanel, BorderLayout.CENTER);
+        calendarPanel.setLayout(new GridLayout(7, 7)); // 7 Tage pro Woche, 7 Zeilen (1 für den Monat, 1 für die Wochentage)
+        panel.add(calendarPanel);
 
-        // Add action listeners for buttons
+        // Neues Panel für die Einträge und Buttons
+        entryPanel = new JPanel();
+        entryPanel.setLayout(new BoxLayout(entryPanel, BoxLayout.Y_AXIS));
+        JScrollPane scrollPane = new JScrollPane(entryPanel);
+        scrollPane.setPreferredSize(new Dimension(700, 100));
+
+        // Panel für die Buttons
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        createButton = new JButton("Erstellen");
+        editButton = new JButton("Bearbeiten");
+        deleteButton = new JButton("Löschen");
+
+        buttonPanel.add(createButton);
+        buttonPanel.add(editButton);
+        buttonPanel.add(deleteButton);
+
+        panel.add(scrollPane);
+        panel.add(buttonPanel);
+
+        // Action Listener für die Buttons
         prevButton.addActionListener(e -> {
             currentDate = currentDate.minusMonths(1);
             updateCalendar(calendarPanel);
@@ -91,7 +118,7 @@ final public class FrontendMain implements Frontend {
         });
 
         this.todayButton.addActionListener(e -> {
-            currentDate = LocalDate.now(); // Set the current date
+            currentDate = LocalDate.now(); // Setzt das aktuelle Datum
             updateCalendar(calendarPanel);
         });
 
@@ -99,6 +126,25 @@ final public class FrontendMain implements Frontend {
 
         this.frame.add(panel);
         this.frame.setVisible(true);
+    }
+
+    private void showEntriesForDay(int day) {
+        LocalDate selectedDate = LocalDate.of(currentDate.getYear(), currentDate.getMonth(), day);
+        entryPanel.removeAll();
+        entryCheckBoxes = new ArrayList<>();
+
+        for (Calendar calendar : calendars) {
+            for (Entry entry : calendar.getEntries()) {
+                if (entry.getDateAndTime().toLocalDate().equals(selectedDate)) {
+                    JCheckBox checkBox = new JCheckBox(entry.toString());
+                    entryCheckBoxes.add(checkBox);
+                    entryPanel.add(checkBox);
+                }
+            }
+        }
+
+        entryPanel.revalidate();
+        entryPanel.repaint();
     }
 
     /**
@@ -123,36 +169,36 @@ final public class FrontendMain implements Frontend {
     private void updateCalendar(JPanel calendarPanel) {
         calendarPanel.removeAll();
 
-        // Get current month and year
+        // Aktuellen Monat und Jahr abrufen
         int currentMonth = currentDate.getMonthValue();
         int currentYear = currentDate.getYear();
         String monthName = currentDate.getMonth().getDisplayName(TextStyle.FULL, Locale.forLanguageTag(this.language));
 
         this.monthLabel.setText(monthName + " " + currentYear);
 
-        // Add weekdays
+        // Wochentage hinzufügen
         String[] days = {"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
         for (String day : days) {
             calendarPanel.add(new JLabel(this.translations.getOrDefault(day, day), SwingConstants.CENTER));
         }
 
-        // Get the first day of the month
+        // Ersten Tag des Monats abrufen
         LocalDate firstDayOfMonth = LocalDate.of(currentYear, currentMonth, 1);
-        int startDay = (firstDayOfMonth.getDayOfWeek().getValue() + 6) % 7; // Monday = 0, Tuesday = 1, ...
+        int startDay = (firstDayOfMonth.getDayOfWeek().getValue() + 6) % 7; // Montag = 0, Dienstag = 1, ...
 
-        // Add days of the month
+        // Tage des Monats hinzufügen
         int daysInMonth = currentDate.lengthOfMonth();
         for (int i = 0; i < startDay; i++) {
-            calendarPanel.add(new JLabel("")); // Empty labels for the days before the 1st of the month
+            calendarPanel.add(new JLabel("")); // Leere Labels für die Tage vor dem 1. des Monats
         }
         for (int day = 1; day <= daysInMonth; day++) {
             JButton dayButton = createDayButton(day);
             calendarPanel.add(dayButton);
         }
 
-        // Fill up to 49 elements in the calendarPanel (7 days per week, 7 rows)
+        // Auffüllen bis zu 49 Elemente im calendarPanel (7 Tage pro Woche, 7 Zeilen)
         for (int i = 0; i < (49 - 7 - (startDay + daysInMonth)); i++) {
-            calendarPanel.add(new JLabel("")); // Empty labels for the days before the 1st of the month
+            calendarPanel.add(new JLabel("")); // Leere Labels für die Tage nach dem letzten Tag des Monats
         }
 
         calendarPanel.revalidate();
@@ -170,6 +216,7 @@ final public class FrontendMain implements Frontend {
         if (currentDate.getYear() == LocalDate.now().getYear() && currentDate.getMonth() == LocalDate.now().getMonth() && day == LocalDate.now().getDayOfMonth()) {
             dayButton.setBorder(BorderFactory.createLineBorder(Color.BLUE, 2));
         }
+        dayButton.addActionListener(e -> showEntriesForDay(day));
         return dayButton;
     }
 

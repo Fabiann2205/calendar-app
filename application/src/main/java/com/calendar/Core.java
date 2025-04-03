@@ -27,6 +27,7 @@ public class Core implements Observable {
         this.frontend.initialize(this.commandExecutor, this);
         this.database.createTables();
         this.calendars = new ArrayList<>(Arrays.asList(this.database.listCalendars()));
+        notifyObservers();
 
         // For Testing
         // this.calendars.add(new Calendar("Test Calendar", "Test Description"));
