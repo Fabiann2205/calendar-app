@@ -9,7 +9,7 @@ public class Calendar {
     private final UUID uuid;
     private String name;
     private String description;
-    private Entry[] entries;
+    private Entry[] entries = new Entry[]{};
     private final ZonedDateTime createdAt;
 
     public Calendar(UUID uuid, String description, String name, Entry[] entries, ZonedDateTime createdAt) {

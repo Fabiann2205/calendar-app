@@ -28,12 +28,13 @@ import java.util.logging.Logger;
  */
 final public class FrontendMain implements Frontend {
     private static final Logger logger = Logger.getLogger(FrontendMain.class.getName());
-    private static LocalDate currentDate = LocalDate.now();
+    private static ZonedDateTime currentDate = ZonedDateTime.now();
     private Map<String, String> translations;
     private String language;
     private List<Calendar> calendars;
     private CommandExecutor commandExecutor;
     private final String translationsPath = "/languages/";
+    private int selectedDay = currentDate.getDayOfMonth();
 
     // GUI components
     private JFrame frame;
@@ -91,7 +92,6 @@ final public class FrontendMain implements Frontend {
         calendarPanel.setLayout(new GridLayout(7, 7)); // 7 Tage pro Woche, 7 Zeilen (1 für den Monat, 1 für die Wochentage)
         panel.add(calendarPanel);
 
-        // Neues Panel für die Einträge und Buttons
         entryPanel = new JPanel();
         entryPanel.setLayout(new BoxLayout(entryPanel, BoxLayout.Y_AXIS));
         JScrollPane scrollPane = new JScrollPane(entryPanel);
@@ -107,19 +107,24 @@ final public class FrontendMain implements Frontend {
         buttonPanel.add(editButton);
         buttonPanel.add(deleteButton);
 
-        createButton.addActionListener(e -> showEntryPopup("Erstellen", null));
+        createButton.addActionListener(e -> {
+            showEntryPopup("Erstellen", null);
+            showEntriesForDay(selectedDay);
+        });
         editButton.addActionListener(e -> {
             Entry selectedEntry = getSelectedEntry();
             if (selectedEntry != null) {
                 showEntryPopup("Bearbeiten", selectedEntry);
+                showEntriesForDay(selectedDay);
             }
         });
         deleteButton.addActionListener(e -> {
             Entry selectedEntry = getSelectedEntry();
             if (selectedEntry != null) {
                 showDeleteConfirmationPopup(selectedEntry);
+                this.commandExecutor.executeCommands();
+                showEntriesForDay(selectedDay);
             }
-            this.commandExecutor.executeCommands();
         });
 
         panel.add(scrollPane);
@@ -137,7 +142,7 @@ final public class FrontendMain implements Frontend {
         });
 
         this.todayButton.addActionListener(e -> {
-            currentDate = LocalDate.now(); // Setzt das aktuelle Datum
+            currentDate = ZonedDateTime.now(); // Setzt das aktuelle Datum
             updateCalendar(calendarPanel);
         });
 
@@ -201,7 +206,7 @@ final public class FrontendMain implements Frontend {
 
         JPanel entryPanel = new JPanel(new GridLayout(0, 1));
         JTextField titleField = new JTextField(entry != null ? entry.getTitle() : "");
-        JTextField dateField = new JTextField(entry != null ? entry.getDateAndTime().toString() : ZonedDateTime.now().toString());
+        JTextField dateField = new JTextField(entry != null ? entry.getDateAndTime().toString() : LocalDate.of(currentDate.getYear(), currentDate.getMonth(), selectedDay).atStartOfDay(currentDate.getZone()).toString());
         entryPanel.add(new JLabel("Titel:"));
         entryPanel.add(titleField);
         entryPanel.add(new JLabel("Datum:"));
@@ -257,6 +262,7 @@ final public class FrontendMain implements Frontend {
     }
 
     private void showEntriesForDay(int day) {
+        this.selectedDay = day; // Aktualisiere den ausgewählten Tag
         LocalDate selectedDate = LocalDate.of(currentDate.getYear(), currentDate.getMonth(), day);
         entryPanel.removeAll();
         entryCheckBoxes = new ArrayList<>();
@@ -273,6 +279,9 @@ final public class FrontendMain implements Frontend {
 
         entryPanel.revalidate();
         entryPanel.repaint();
+
+        // Aktualisiere die Kalenderansicht, um die Markierung zu aktualisieren
+        updateCalendar(calendarPanel);
     }
 
     /**
@@ -315,7 +324,7 @@ final public class FrontendMain implements Frontend {
         int startDay = (firstDayOfMonth.getDayOfWeek().getValue() + 6) % 7; // Montag = 0, Dienstag = 1, ...
 
         // Tage des Monats hinzufügen
-        int daysInMonth = currentDate.lengthOfMonth();
+        int daysInMonth = currentDate.toLocalDate().lengthOfMonth();
         for (int i = 0; i < startDay; i++) {
             calendarPanel.add(new JLabel("")); // Leere Labels für die Tage vor dem 1. des Monats
         }
@@ -341,9 +350,20 @@ final public class FrontendMain implements Frontend {
      */
     private JButton createDayButton(int day) {
         JButton dayButton = new JButton(String.valueOf(day));
-        if (currentDate.getYear() == LocalDate.now().getYear() && currentDate.getMonth() == LocalDate.now().getMonth() && day == LocalDate.now().getDayOfMonth()) {
+
+        // Markiere den heutigen Tag
+        if (currentDate.getYear() == LocalDate.now().getYear() &&
+                currentDate.getMonth() == LocalDate.now().getMonth() &&
+                day == LocalDate.now().getDayOfMonth()) {
             dayButton.setBorder(BorderFactory.createLineBorder(Color.BLUE, 2));
         }
+
+        // Markiere den ausgewählten Tag
+        if (day == selectedDay) {
+            dayButton.setBackground(Color.YELLOW); // Hintergrundfarbe für den ausgewählten Tag
+            dayButton.setOpaque(true);
+        }
+
         dayButton.addActionListener(e -> showEntriesForDay(day));
         return dayButton;
     }
@@ -369,14 +389,12 @@ final public class FrontendMain implements Frontend {
 
     @Override
     public void update(Calendar[] calendars) {
-        this.calendars = new ArrayList<>(Arrays.asList(calendars));
-        updateCalendar(this.calendarPanel);
-
-        // show popup with entries
-        for (Calendar calendar : calendars) {
-            for (Entry entry : calendar.getEntries()) {
-                logger.log(Level.INFO, entry.toString());
-            }
+        if (calendars == null) {
+            logger.log(Level.WARNING, "Received null calendars array in update method.");
+            this.calendars = new ArrayList<>(); // Leere Liste initialisieren
+        } else {
+            this.calendars = new ArrayList<>(Arrays.asList(calendars));
         }
+        updateCalendar(this.calendarPanel);
     }
 }
