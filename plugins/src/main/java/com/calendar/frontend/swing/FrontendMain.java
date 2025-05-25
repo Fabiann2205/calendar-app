@@ -230,7 +230,7 @@ final public class FrontendMain implements Frontend {
 
         JTextField titleField = new JTextField(entry != null ? entry.getTitle() : "");
         JTextArea descriptionArea = new JTextArea(entry != null ? entry.getDescription() : "");
-        JTextField dateField = new JTextField(entry != null ? entry.getDateAndTime().toString() :
+        JTextField dateField = new JTextField(entry != null ? entry.getDateAndTime().format(formatter) :
                 LocalDate.of(currentDate.getYear(), currentDate.getMonth(), selectedDay)
                         .atStartOfDay(ZoneId.systemDefault())
                         .format(formatter));
@@ -284,10 +284,11 @@ final public class FrontendMain implements Frontend {
 
         saveButton.addActionListener(e -> {
             try {
+                LocalDateTime localDateTime = LocalDateTime.parse(dateField.getText(), formatter);
+                ZonedDateTime zonedDateTime = localDateTime.atZone(ZoneId.systemDefault());
                 if ("Erstellen".equals(action)) {
                     UUID calendarId = this.calendars.getFirst().getUuid();
-                    LocalDateTime localDateTime = LocalDateTime.parse(dateField.getText(), formatter);
-                    ZonedDateTime zonedDateTime = localDateTime.atZone(ZoneId.systemDefault());
+
                     Entry newEntry = new Entry(
                             titleField.getText(),
                             zonedDateTime
@@ -306,7 +307,7 @@ final public class FrontendMain implements Frontend {
                     UUID calendarId = getCalendarIdForEntry(entry);
                     if (calendarId != null) {
                         entry.setTitle(titleField.getText());
-                        entry.setDateAndTime(ZonedDateTime.parse(dateField.getText()));
+                        entry.setDateAndTime(zonedDateTime);
                         entry.setDescription(descriptionArea.getText());
                         entry.setLocation(locationField.getText());
                         entry.setCategory((Category) categoryComboBox.getSelectedItem());
@@ -383,19 +384,17 @@ final public class FrontendMain implements Frontend {
                     };
 
                     // Felder hinzufügen (nur wenn belegt)
-                    addField.accept("Titel", entry.getTitle());
-                    addField.accept("Beschreibung", entry.getDescription());
-                    if (entry.getDateAndTime() != null) {
-                        addField.accept("Uhrzeit", entry.getDateAndTime().toLocalTime().toString());
-                    }
-                    addField.accept("Ort", entry.getLocation());
-                    addField.accept("Kategorie", String.valueOf(entry.getCategory()));
-                    addField.accept("Priorität", String.valueOf(entry.getPriority()));
-                    addField.accept("Status", String.valueOf(entry.getStatus()));
-                    addField.accept("Notizen", entry.getNotes());
+                    addField.accept(getTranslation("EditTitle","Titel"), entry.getTitle());
+                    addField.accept(getTranslation("Description","Beschreibung"), entry.getDescription());
+                    addField.accept(getTranslation("Date","Fälligkeitsdatum"), entry.getDateAndTime().toLocalTime().toString());
+                    addField.accept(getTranslation("Location","Ort"), entry.getLocation());
+                    addField.accept(getTranslation("Category","Kategorie"), String.valueOf(entry.getCategory()));
+                    addField.accept(getTranslation("Priority","Priorität"), String.valueOf(entry.getPriority()));
+                    addField.accept(getTranslation("Status","Status"), String.valueOf(entry.getStatus()));
+                    addField.accept(getTranslation("Notes","Notizen"), entry.getNotes());
 
                     if (entry.getCreatedAt() != null) {
-                        addField.accept("Erstellt am", entry.getCreatedAt().toLocalDateTime().format(formatter));
+                        addField.accept(getTranslation("CreationDate","Erstellt am"), entry.getCreatedAt().toLocalDateTime().format(formatter));
                     }
 
 

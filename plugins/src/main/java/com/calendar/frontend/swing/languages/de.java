@@ -17,7 +17,15 @@ public enum de implements Translation {
     Cancel("Abbrechen"),
     Date("Fälligkeitsdatum"),
     EditTitle("Title"),
-    DeleteConfirmText("Sicher, dass du den Eintrag löschen willst?");
+    DeleteConfirmText("Sicher, dass du den Eintrag löschen willst?"),
+    Description("Beschreibung"),
+    Location("Standort"),
+    Category("Kategorie"),
+    Priority("Priorität"),
+    Status("Status"),
+    Notes("Notizen"),
+    CreationDate("Erstellt am");
+
     private final String translation;
 
     de(String translation) {
