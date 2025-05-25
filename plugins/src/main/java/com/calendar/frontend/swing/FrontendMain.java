@@ -70,7 +70,7 @@ final public class FrontendMain implements Frontend {
 
         this.translations = loadTranslations();
 
-        this.frame = new JFrame(this.translations.getOrDefault("Title", "Calendar App"));
+        this.frame = new JFrame(getTranslation("Title", "Calendar App"));
         this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.frame.setSize(700, 500); // Höhe erhöht, um Platz für das Textfeld zu schaffen
 
@@ -80,7 +80,7 @@ final public class FrontendMain implements Frontend {
         JPanel headerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         JButton prevButton = new JButton("<");
         JButton nextButton = new JButton(">");
-        this.todayButton = new JButton(this.translations.getOrDefault("Today", "Today"));
+        this.todayButton = new JButton(getTranslation("Today", "Today"));
         this.monthLabel = new JLabel("", SwingConstants.CENTER);
         this.monthLabel.setPreferredSize(new Dimension(120, 30));
 
@@ -108,9 +108,9 @@ final public class FrontendMain implements Frontend {
 
         // Panel für die Buttons
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        createButton = new JButton(this.translations.getOrDefault("Create", "Create"));
-        editButton = new JButton(this.translations.getOrDefault("Edit", "Edit"));
-        deleteButton = new JButton(this.translations.getOrDefault("Delete", "Delete"));
+        createButton = new JButton(getTranslation("Create", "Create"));
+        editButton = new JButton(getTranslation("Edit", "Edit"));
+        deleteButton = new JButton(getTranslation("Delete", "Delete"));
 
         buttonPanel.add(createButton);
         buttonPanel.add(editButton);
@@ -160,11 +160,11 @@ final public class FrontendMain implements Frontend {
             this.language = selected.equals("Deutsch") ? "de" : "en";
             this.translations = loadTranslations(); // Re-lade Übersetzungen
             updateCalendar(this.calendarPanel);     // Re-render Kalender
-            this.todayButton.setText(this.translations.getOrDefault("Today", "Today"));
-            createButton.setText(this.translations.getOrDefault("Create", "Create"));
-            editButton.setText(this.translations.getOrDefault("Edit", "Edit"));
-            deleteButton.setText(this.translations.getOrDefault("Delete", "Delete"));
-            this.frame.setTitle(this.translations.getOrDefault("Title", "Calendar App"));
+            this.todayButton.setText(getTranslation("Today", "Today"));
+            createButton.setText(getTranslation("Create", "Create"));
+            editButton.setText(getTranslation("Edit", "Edit"));
+            deleteButton.setText(getTranslation("Delete", "Delete"));
+            this.frame.setTitle(getTranslation("Title", "Calendar App"));
 
         });
 
@@ -226,14 +226,14 @@ final public class FrontendMain implements Frontend {
         JPanel entryPanel = new JPanel(new GridLayout(0, 1));
         JTextField titleField = new JTextField(entry != null ? entry.getTitle() : "");
         JTextField dateField = new JTextField(entry != null ? entry.getDateAndTime().toString() : LocalDate.of(currentDate.getYear(), currentDate.getMonth(), selectedDay).atStartOfDay(currentDate.getZone()).toString());
-        entryPanel.add(new JLabel(this.translations.getOrDefault("EditTitle", "Title")));
+        entryPanel.add(new JLabel(getTranslation("EditTitle", "Title")));
         entryPanel.add(titleField);
-        entryPanel.add(new JLabel(this.translations.getOrDefault("Date", "Date")));
+        entryPanel.add(new JLabel(getTranslation("Date", "Date")));
         entryPanel.add(dateField);
 
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        JButton saveButton = new JButton(this.translations.getOrDefault("Save", "Save"));
-        JButton cancelButton = new JButton(this.translations.getOrDefault("Cancel", "Cancel"));
+        JButton saveButton = new JButton(getTranslation("Save", "Save"));
+        JButton cancelButton = new JButton(getTranslation("Cancel", "Cancel"));
 
         saveButton.addActionListener(e -> {
             switch (action) {
@@ -378,7 +378,7 @@ final public class FrontendMain implements Frontend {
         // Wochentage hinzufügen
         String[] days = {"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
         for (String day : days) {
-            calendarPanel.add(new JLabel(this.translations.getOrDefault(day, day), SwingConstants.CENTER));
+            calendarPanel.add(new JLabel(getTranslation(day, day), SwingConstants.CENTER));
         }
 
 
@@ -460,4 +460,10 @@ final public class FrontendMain implements Frontend {
         }
         updateCalendar(this.calendarPanel);
     }
+
+
+    private String getTranslation(String key, String fallback) {
+        return this.translations.getOrDefault(key, fallback);
+    }
+
 }
