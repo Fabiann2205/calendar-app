@@ -33,23 +33,23 @@ final public class FrontendMain implements Frontend {
     private static ZonedDateTime currentDate = ZonedDateTime.now();
     private Map<String, String> translations;
     private String language;
-    private List<Calendar> calendars;
+    List<Calendar> calendars;
     private CommandExecutor commandExecutor;
     private final String translationsPath = "/languages/";
     private int selectedDay = currentDate.getDayOfMonth();
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
 
     // GUI components
-    private JFrame frame;
-    private JButton todayButton;
-    private JLabel monthLabel;
-    private JPanel calendarPanel;
+    JFrame frame;
+    JButton todayButton;
+    JLabel monthLabel;
+    JPanel calendarPanel;
     private JTextArea entryTextArea;
-    private JPanel entryPanel;
+    JPanel entryPanel;
 
-    private JButton createButton;
-    private JButton editButton;
-    private JButton deleteButton;
+    JButton createButton;
+    JButton editButton;
+    JButton deleteButton;
 
     private List<JCheckBox> entryCheckBoxes;
 
@@ -278,7 +278,7 @@ final public class FrontendMain implements Frontend {
         return null;
     }
 
-    private void showEntriesForDay(int day) {
+    void showEntriesForDay(int day) {
         this.selectedDay = day;
         LocalDate selectedDate = LocalDate.of(currentDate.getYear(), currentDate.getMonth(), day);
         entryPanel.removeAll();
@@ -466,7 +466,7 @@ final public class FrontendMain implements Frontend {
     }
 
 
-    private String getTranslation(String key, String fallback) {
+    public String getTranslation(String key, String fallback) {
         return this.translations.getOrDefault(key, fallback);
     }
 

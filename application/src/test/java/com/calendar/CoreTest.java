@@ -35,7 +35,6 @@ class CoreTest {
         when(mockDatabase.listCalendars()).thenReturn(new Calendar[0]);
 
         core = new Core(mockDatabase, mockFrontend);
-        core.calendars = new ArrayList<>();
     }
 
     @Test
@@ -52,7 +51,7 @@ class CoreTest {
     }
 
     @Test
-    void testAddEntry_invalidCalendar_returnsFalse() {
+    void testAddEntry_invalidCalendar() {
         boolean result = core.addEntry(entry, UUID.randomUUID());
         assertFalse(result);
         verify(mockDatabase, never()).save(any());
@@ -60,20 +59,21 @@ class CoreTest {
 
     @Test
     void testRemoveEntry_success() {
-        core.calendars = new ArrayList<>();
         core.calendars.add(calendar);
         boolean result = core.addEntry(entry, calendar.getUuid());
-
         assertTrue(result);
         assertEquals(1, calendar.getEntries().length);
-
 
         Entry entry2 = new Entry("Test Entry2", ZonedDateTime.now());;
         core.addEntry(entry2, calendar.getUuid());
         assertEquals(2, calendar.getEntries().length);
+        verify(mockDatabase, times(2)).save(calendar);
+
 
         core.removeEntry(entry2, calendar.getUuid());
         assertEquals(1, calendar.getEntries().length);
+
+        verify(mockDatabase, times(3)).save(calendar); // falls removeEntry auch speichert
 
     }
 

@@ -15,7 +15,7 @@ public class Core implements Observable {
     private static final Logger logger = Logger.getLogger(Core.class.getName());
     private final Database database;
     private final Frontend frontend;
-    private final CommandExecutor commandExecutor;
+    public final CommandExecutor commandExecutor;
     private final List<Observer> observers = new ArrayList<>();
 
     List<Calendar> calendars;
