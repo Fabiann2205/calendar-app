@@ -7,6 +7,9 @@ import com.calendar.Entry;
 import com.calendar.commands.AddEntryCommand;
 import com.calendar.commands.DeleteEntryCommand;
 import com.calendar.commands.EditEntryCommand;
+import com.calendar.enums.Category;
+import com.calendar.enums.Priority;
+import com.calendar.enums.Status;
 import com.calendar.frontend.swing.languages.Translation;
 import com.calendar.frontend.swing.languages.de;
 import com.calendar.frontend.swing.languages.en;
@@ -15,6 +18,8 @@ import com.calendar.interfaces.Frontend;
 import javax.swing.*;
 import java.awt.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
@@ -218,40 +223,105 @@ final public class FrontendMain implements Frontend {
 
     private void showEntryPopup(String action, Entry entry) {
         JDialog dialog = new JDialog(frame, action, true);
-        dialog.setSize(300, 200);
+        dialog.setSize(400, 400);
         dialog.setLayout(new BorderLayout());
 
-        JPanel entryPanel = new JPanel(new GridLayout(0, 1));
+        JPanel entryPanel = new JPanel(new GridLayout(0, 2, 5, 5));
+
         JTextField titleField = new JTextField(entry != null ? entry.getTitle() : "");
-        JTextField dateField = new JTextField(entry != null ? entry.getDateAndTime().toString() : LocalDate.of(currentDate.getYear(), currentDate.getMonth(), selectedDay).atStartOfDay(currentDate.getZone()).toString());
+        JTextArea descriptionArea = new JTextArea(entry != null ? entry.getDescription() : "");
+        JTextField dateField = new JTextField(entry != null ? entry.getDateAndTime().toString() :
+                LocalDate.of(currentDate.getYear(), currentDate.getMonth(), selectedDay)
+                        .atStartOfDay(ZoneId.systemDefault())
+                        .format(formatter));
+
+        JTextField locationField = new JTextField(entry != null ? entry.getLocation() : "");
+
+        JComboBox<Category> categoryComboBox = new JComboBox<>(Category.values());
+        if (entry != null && entry.getCategory() != null) {
+            categoryComboBox.setSelectedItem(entry.getCategory());
+        }
+
+        JComboBox<Priority> priorityComboBox = new JComboBox<>(Priority.values());
+        if (entry != null && entry.getPriority() != null) {
+            priorityComboBox.setSelectedItem(entry.getPriority());
+        }
+
+        JComboBox<Status> statusComboBox = new JComboBox<>(Status.values());
+        if (entry != null && entry.getStatus() != null) {
+            statusComboBox.setSelectedItem(entry.getStatus());
+        }
+
+        JTextArea notesArea = new JTextArea(entry != null ? entry.getNotes() : "");
+
         entryPanel.add(new JLabel(getTranslation("EditTitle", "Title")));
         entryPanel.add(titleField);
+
+        entryPanel.add(new JLabel(getTranslation("Description", "Description")));
+        entryPanel.add(new JScrollPane(descriptionArea));
+
         entryPanel.add(new JLabel(getTranslation("Date", "Date")));
         entryPanel.add(dateField);
+
+        entryPanel.add(new JLabel(getTranslation("Location", "Location")));
+        entryPanel.add(locationField);
+
+        entryPanel.add(new JLabel(getTranslation("Category", "Category")));
+        entryPanel.add(categoryComboBox);
+
+        entryPanel.add(new JLabel(getTranslation("Priority", "Priority")));
+        entryPanel.add(priorityComboBox);
+
+        entryPanel.add(new JLabel(getTranslation("Status", "Status")));
+        entryPanel.add(statusComboBox);
+
+        entryPanel.add(new JLabel(getTranslation("Notes", "Notes")));
+        entryPanel.add(new JScrollPane(notesArea));
 
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         JButton saveButton = new JButton(getTranslation("Save", "Save"));
         JButton cancelButton = new JButton(getTranslation("Cancel", "Cancel"));
 
         saveButton.addActionListener(e -> {
-            switch (action) {
-                case "Erstellen" -> {
+            try {
+                if ("Erstellen".equals(action)) {
                     UUID calendarId = this.calendars.getFirst().getUuid();
-                    Entry newEntry = new Entry(titleField.getText(), ZonedDateTime.parse(dateField.getText()));
+                    LocalDateTime localDateTime = LocalDateTime.parse(dateField.getText(), formatter);
+                    ZonedDateTime zonedDateTime = localDateTime.atZone(ZoneId.systemDefault());
+                    Entry newEntry = new Entry(
+                            titleField.getText(),
+                            zonedDateTime
+                    );
+                    // Alle Felder setzen
+                    newEntry.setDescription(descriptionArea.getText());
+                    newEntry.setLocation(locationField.getText());
+                    newEntry.setCategory((Category) categoryComboBox.getSelectedItem());
+                    newEntry.setPriority((Priority) priorityComboBox.getSelectedItem());
+                    newEntry.setStatus((Status) statusComboBox.getSelectedItem());
+                    newEntry.setNotes(notesArea.getText());
+
                     commandExecutor.addCommand(new AddEntryCommand(newEntry, calendarId));
                     commandExecutor.executeCommands();
-                }
-                case "Bearbeiten" -> {
+                } else if ("Bearbeiten".equals(action)) {
                     UUID calendarId = getCalendarIdForEntry(entry);
                     if (calendarId != null) {
                         entry.setTitle(titleField.getText());
                         entry.setDateAndTime(ZonedDateTime.parse(dateField.getText()));
+                        entry.setDescription(descriptionArea.getText());
+                        entry.setLocation(locationField.getText());
+                        entry.setCategory((Category) categoryComboBox.getSelectedItem());
+                        entry.setPriority((Priority) priorityComboBox.getSelectedItem());
+                        entry.setStatus((Status) statusComboBox.getSelectedItem());
+                        entry.setNotes(notesArea.getText());
+
                         commandExecutor.addCommand(new EditEntryCommand(entry, calendarId));
                         commandExecutor.executeCommands();
                     }
                 }
+                dialog.dispose();
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(dialog, "Invalid input: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }
-            dialog.dispose();
         });
 
         cancelButton.addActionListener(e -> dialog.dispose());
@@ -261,8 +331,10 @@ final public class FrontendMain implements Frontend {
 
         dialog.add(entryPanel, BorderLayout.CENTER);
         dialog.add(buttonPanel, BorderLayout.SOUTH);
+
         dialog.setVisible(true);
     }
+
 
     private UUID getCalendarIdForEntry(Entry entry) {
         if (entry == null) {

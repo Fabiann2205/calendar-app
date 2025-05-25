@@ -15,7 +15,7 @@ public enum de implements Translation {
     Delete("Löschen"),
     Save("Speichern"),
     Cancel("Abbrechen"),
-    Date("Datum"),
+    Date("Fälligkeitsdatum"),
     EditTitle("Title"),
     DeleteConfirmText("Sicher, dass du den Eintrag löschen willst?");
     private final String translation;

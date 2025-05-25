@@ -15,7 +15,7 @@ public enum en implements Translation {
     Delete("Delete"),
     Save("Save"),
     Cancel("Cancel"),
-    Date("Date"),
+    Date("Due date"),
     EditTitle("Title"),
     DeleteConfirmText("Are you sure you want to delete the entry?");
     private final String translation;
