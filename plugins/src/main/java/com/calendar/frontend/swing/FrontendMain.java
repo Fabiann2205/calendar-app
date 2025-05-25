@@ -84,10 +84,16 @@ final public class FrontendMain implements Frontend {
         this.monthLabel = new JLabel("", SwingConstants.CENTER);
         this.monthLabel.setPreferredSize(new Dimension(120, 30));
 
+        // Dropdown zur Sprachauswahl
+        String[] languages = {"Deutsch", "English"};
+        JComboBox<String> languageComboBox = new JComboBox<>(languages);
+        languageComboBox.setSelectedItem(this.language.equals("de") ? "Deutsch" : "English");
+
         headerPanel.add(prevButton);
         headerPanel.add(this.monthLabel);
         headerPanel.add(this.todayButton);
         headerPanel.add(nextButton);
+        headerPanel.add(languageComboBox);
 
         panel.add(headerPanel);
 
@@ -102,9 +108,9 @@ final public class FrontendMain implements Frontend {
 
         // Panel für die Buttons
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        createButton = new JButton("Erstellen");
-        editButton = new JButton("Bearbeiten");
-        deleteButton = new JButton("Löschen");
+        createButton = new JButton(this.translations.getOrDefault("Create", "Create"));
+        editButton = new JButton(this.translations.getOrDefault("Edit", "Edit"));
+        deleteButton = new JButton(this.translations.getOrDefault("Delete", "Delete"));
 
         buttonPanel.add(createButton);
         buttonPanel.add(editButton);
@@ -148,6 +154,20 @@ final public class FrontendMain implements Frontend {
             currentDate = ZonedDateTime.now(); // Setzt das aktuelle Datum
             updateCalendar(calendarPanel);
         });
+
+        languageComboBox.addActionListener(e -> {
+            String selected = (String) languageComboBox.getSelectedItem();
+            this.language = selected.equals("Deutsch") ? "de" : "en";
+            this.translations = loadTranslations(); // Re-lade Übersetzungen
+            updateCalendar(this.calendarPanel);     // Re-render Kalender
+            this.todayButton.setText(this.translations.getOrDefault("Today", "Today"));
+            createButton.setText(this.translations.getOrDefault("Create", "Create"));
+            editButton.setText(this.translations.getOrDefault("Edit", "Edit"));
+            deleteButton.setText(this.translations.getOrDefault("Delete", "Delete"));
+            this.frame.setTitle(this.translations.getOrDefault("Title", "Calendar App"));
+
+        });
+
 
         updateCalendar(calendarPanel);
 
@@ -206,14 +226,14 @@ final public class FrontendMain implements Frontend {
         JPanel entryPanel = new JPanel(new GridLayout(0, 1));
         JTextField titleField = new JTextField(entry != null ? entry.getTitle() : "");
         JTextField dateField = new JTextField(entry != null ? entry.getDateAndTime().toString() : LocalDate.of(currentDate.getYear(), currentDate.getMonth(), selectedDay).atStartOfDay(currentDate.getZone()).toString());
-        entryPanel.add(new JLabel("Titel:"));
+        entryPanel.add(new JLabel(this.translations.getOrDefault("EditTitle", "Title")));
         entryPanel.add(titleField);
-        entryPanel.add(new JLabel("Datum:"));
+        entryPanel.add(new JLabel(this.translations.getOrDefault("Date", "Date")));
         entryPanel.add(dateField);
 
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        JButton saveButton = new JButton("Speichern");
-        JButton cancelButton = new JButton("Abbrechen");
+        JButton saveButton = new JButton(this.translations.getOrDefault("Save", "Save"));
+        JButton cancelButton = new JButton(this.translations.getOrDefault("Cancel", "Cancel"));
 
         saveButton.addActionListener(e -> {
             switch (action) {
@@ -360,6 +380,7 @@ final public class FrontendMain implements Frontend {
         for (String day : days) {
             calendarPanel.add(new JLabel(this.translations.getOrDefault(day, day), SwingConstants.CENTER));
         }
+
 
         // Ersten Tag des Monats abrufen
         LocalDate firstDayOfMonth = LocalDate.of(currentYear, currentMonth, 1);

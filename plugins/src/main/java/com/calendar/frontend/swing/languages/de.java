@@ -9,8 +9,14 @@ public enum de implements Translation {
     Sat("Samstag"),
     Sun("Sonntag"),
     Today("Heute"),
-    Title("Kalender-App");
-
+    Title("Kalender-App"),
+    Create("Erstellen"),
+    Edit("Bearbeiten"),
+    Delete("Löschen"),
+    Save("Speichern"),
+    Cancel("Abbrechen"),
+    Date("Datum"),
+    EditTitle("Title");
     private final String translation;
 
     de(String translation) {
