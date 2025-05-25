@@ -18,7 +18,7 @@ public class Core implements Observable {
     private final CommandExecutor commandExecutor;
     private final List<Observer> observers = new ArrayList<>();
 
-    private List<Calendar> calendars;
+    List<Calendar> calendars;
 
     public Core(Database database, Frontend frontend) {
         this.database = database;

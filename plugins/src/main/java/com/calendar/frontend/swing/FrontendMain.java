@@ -159,12 +159,10 @@ final public class FrontendMain implements Frontend {
             String selected = (String) languageComboBox.getSelectedItem();
             this.language = selected.equals("Deutsch") ? "de" : "en";
             this.translations = loadTranslations(); // Re-lade Übersetzungen
+            setLanguage(this.language);
+
             updateCalendar(this.calendarPanel);     // Re-render Kalender
-            this.todayButton.setText(getTranslation("Today", "Today"));
-            createButton.setText(getTranslation("Create", "Create"));
-            editButton.setText(getTranslation("Edit", "Edit"));
-            deleteButton.setText(getTranslation("Delete", "Delete"));
-            this.frame.setTitle(getTranslation("Title", "Calendar App"));
+
 
         });
 
@@ -177,16 +175,16 @@ final public class FrontendMain implements Frontend {
 
 
     private void showDeleteConfirmationPopup(Entry entry) {
-        JDialog dialog = new JDialog(frame, "Löschen", true);
+        JDialog dialog = new JDialog(frame, getTranslation("Delete","Delete"), true);
         dialog.setSize(300, 150);
         dialog.setLayout(new BorderLayout());
 
         JPanel messagePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        messagePanel.add(new JLabel("Sicher, dass du den Eintrag löschen willst?"));
+        messagePanel.add(new JLabel(getTranslation("DeleteConfirmText", "Are you sure you want to delete the entry?")));
 
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        JButton deleteButton = new JButton("Löschen");
-        JButton cancelButton = new JButton("Abbrechen");
+        JButton deleteButton = new JButton(getTranslation("Delete", "Delete"));
+        JButton cancelButton = new JButton(getTranslation("Cancel", "Cancel"));
 
         deleteButton.addActionListener(e -> {
             UUID calendarId = getCalendarIdForEntry(entry);
@@ -357,6 +355,12 @@ final public class FrontendMain implements Frontend {
         this.translations = loadTranslations();
         this.todayButton.setText(translations.getOrDefault("Today", "Today"));
         this.frame.setTitle(translations.getOrDefault("Title", "Calendar App"));
+        this.todayButton.setText(getTranslation("Today", "Today"));
+        this.createButton.setText(getTranslation("Create", "Create"));
+        this.editButton.setText(getTranslation("Edit", "Edit"));
+        this.deleteButton.setText(getTranslation("Delete", "Delete"));
+        this.frame.setTitle(getTranslation("Title", "Calendar App"));
+
         this.updateCalendar(this.calendarPanel);
     }
 
