@@ -16,9 +16,11 @@ import javax.swing.*;
 import java.awt.*;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.util.*;
 import java.util.List;
+import java.util.function.BiConsumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -35,6 +37,7 @@ final public class FrontendMain implements Frontend {
     private CommandExecutor commandExecutor;
     private final String translationsPath = "/languages/";
     private int selectedDay = currentDate.getDayOfMonth();
+    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
 
     // GUI components
     private JFrame frame;
@@ -186,13 +189,9 @@ final public class FrontendMain implements Frontend {
     private Entry getSelectedEntry() {
         for (JCheckBox checkBox : entryCheckBoxes) {
             if (checkBox.isSelected()) {
-                String entryText = checkBox.getText();
-                for (Calendar calendar : calendars) {
-                    for (Entry entry : calendar.getEntries()) {
-                        if (entry.toString().equals(entryText)) {
-                            return entry;
-                        }
-                    }
+                Object prop = checkBox.getClientProperty("entry");
+                if (prop instanceof Entry) {
+                    return (Entry) prop;
                 }
             }
         }
@@ -262,7 +261,7 @@ final public class FrontendMain implements Frontend {
     }
 
     private void showEntriesForDay(int day) {
-        this.selectedDay = day; // Aktualisiere den ausgewählten Tag
+        this.selectedDay = day;
         LocalDate selectedDate = LocalDate.of(currentDate.getYear(), currentDate.getMonth(), day);
         entryPanel.removeAll();
         entryCheckBoxes = new ArrayList<>();
@@ -270,15 +269,58 @@ final public class FrontendMain implements Frontend {
         for (Calendar calendar : calendars) {
             for (Entry entry : calendar.getEntries()) {
                 if (entry.getDateAndTime().toLocalDate().equals(selectedDate)) {
-                    JCheckBox checkBox = new JCheckBox(entry.toString());
+
+                    // Hauptpanel für diesen Eintrag
+                    JPanel entryBox = new JPanel(new BorderLayout(10, 10));
+                    entryBox.setBorder(BorderFactory.createCompoundBorder(
+                            BorderFactory.createEmptyBorder(8, 8, 8, 8),
+                            BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1)
+                    ));
+
+                    JCheckBox checkBox = new JCheckBox();
+                    checkBox.putClientProperty("entry", entry); //Merke das Entry-Objekt; Funktion von Swing
                     entryCheckBoxes.add(checkBox);
-                    entryPanel.add(checkBox);
+
+                    JPanel contentPanel = new JPanel();
+                    contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
+                    contentPanel.setOpaque(false);
+
+                    // Helper zum Hinzufügen eines Labels nur wenn Feld belegt ist
+                    BiConsumer<String, String> addField = (label, value) -> {
+                        if (value != null && !value.isBlank() && !value.toString().equals("null")) {
+                            contentPanel.add(new JLabel("<html><b>" + label + ":</b> " + value + "</html>"));
+                        }
+                    };
+
+                    // Felder hinzufügen (nur wenn belegt)
+                    addField.accept("Titel", entry.getTitle());
+                    addField.accept("Beschreibung", entry.getDescription());
+                    if (entry.getDateAndTime() != null) {
+                        addField.accept("Uhrzeit", entry.getDateAndTime().toLocalTime().toString());
+                    }
+                    addField.accept("Ort", entry.getLocation());
+                    addField.accept("Kategorie", String.valueOf(entry.getCategory()));
+                    addField.accept("Priorität", String.valueOf(entry.getPriority()));
+                    addField.accept("Status", String.valueOf(entry.getStatus()));
+                    addField.accept("Notizen", entry.getNotes());
+
+                    if (entry.getCreatedAt() != null) {
+                        addField.accept("Erstellt am", entry.getCreatedAt().toLocalDateTime().format(formatter));
+                    }
+
+
+                    entryBox.add(contentPanel, BorderLayout.CENTER);
+                    entryBox.add(checkBox, BorderLayout.EAST);
+
+                    entryPanel.add(entryBox);
                 }
             }
         }
 
         entryPanel.revalidate();
         entryPanel.repaint();
+
+
 
         // Aktualisiere die Kalenderansicht, um die Markierung zu aktualisieren
         updateCalendar(calendarPanel);
