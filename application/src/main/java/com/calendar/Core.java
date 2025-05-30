@@ -23,7 +23,7 @@ public class Core implements Observable {
     public Core(Database database, Frontend frontend) {
         this.database = database;
         this.frontend = frontend;
-        this.commandExecutor = new CommandExecutor(this);
+        this.commandExecutor = CommandExecutor.getInstance(this);
         this.frontend.initialize(this.commandExecutor, this);
         this.database.createTables();
         this.calendars = new ArrayList<>(Arrays.asList(this.database.listCalendars()));
