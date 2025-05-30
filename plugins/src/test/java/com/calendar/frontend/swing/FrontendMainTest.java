@@ -70,7 +70,7 @@ public class FrontendMainTest {
         // Arrange: Frontend im EDT erstellen
         frontend = GuiActionRunner.execute(() -> {
             FrontendMain app = new FrontendMain("de");
-            app.initialize(core.commandExecutor, core);
+            app.initialize(CommandExecutor.getInstance(), core);
             return app;
         });
 

@@ -39,7 +39,6 @@ final public class FrontendMain implements Frontend {
     private Map<String, String> translations;
     private String language;
     List<Calendar> calendars;
-    private CommandExecutor commandExecutor;
     private final String translationsPath = "/languages/";
     private int selectedDay = currentDate.getDayOfMonth();
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
@@ -70,7 +69,6 @@ final public class FrontendMain implements Frontend {
      */
     // @Override
     public void initialize(CommandExecutor commandExecutor, Core core) {
-        this.commandExecutor = commandExecutor;
         core.addObserver(this);
 
         this.translations = loadTranslations();
@@ -136,7 +134,7 @@ final public class FrontendMain implements Frontend {
             Entry selectedEntry = getSelectedEntry();
             if (selectedEntry != null) {
                 showDeleteConfirmationPopup(selectedEntry);
-                this.commandExecutor.executeCommands();
+                CommandExecutor.getInstance().executeCommands();
                 showEntriesForDay(selectedDay);
             }
         });
@@ -194,7 +192,7 @@ final public class FrontendMain implements Frontend {
         deleteButton.addActionListener(e -> {
             UUID calendarId = getCalendarIdForEntry(entry);
             if (calendarId != null) {
-                this.commandExecutor.addCommand(new DeleteEntryCommand(entry, calendarId));
+                CommandExecutor.getInstance().addCommand(new DeleteEntryCommand(entry, calendarId));
             }
             dialog.dispose();
         });
@@ -301,8 +299,8 @@ final public class FrontendMain implements Frontend {
                     newEntry.setStatus((Status) statusComboBox.getSelectedItem());
                     newEntry.setNotes(notesArea.getText());
 
-                    commandExecutor.addCommand(new AddEntryCommand(newEntry, calendarId));
-                    commandExecutor.executeCommands();
+                    CommandExecutor.getInstance().addCommand(new AddEntryCommand(newEntry, calendarId));
+                    CommandExecutor.getInstance().executeCommands();
                 } else if ("Bearbeiten".equals(action)) {
                     UUID calendarId = getCalendarIdForEntry(entry);
                     if (calendarId != null) {
@@ -315,8 +313,8 @@ final public class FrontendMain implements Frontend {
                         entry.setStatus((Status) statusComboBox.getSelectedItem());
                         entry.setNotes(notesArea.getText());
 
-                        commandExecutor.addCommand(new EditEntryCommand(entry, calendarId));
-                        commandExecutor.executeCommands();
+                        CommandExecutor.getInstance().addCommand(new EditEntryCommand(entry, calendarId));
+                        CommandExecutor.getInstance().executeCommands();
                     }
                 }
                 dialog.dispose();
