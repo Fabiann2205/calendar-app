@@ -15,6 +15,7 @@ import org.assertj.swing.fixture.DialogFixture;
 import org.assertj.swing.fixture.FrameFixture;
 import org.junit.jupiter.api.*;
 import org.mockito.Mockito;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import javax.swing.*;
@@ -69,10 +70,11 @@ public class FrontendMainTest {
 
         // Arrange: Frontend im EDT erstellen
         frontend = GuiActionRunner.execute(() -> {
-            FrontendMain app = new FrontendMain("de");
+            FrontendMain app = new FrontendMain("en");
             app.initialize(CommandExecutor.getInstance(), core);
             return app;
         });
+
 
         window = new FrameFixture(frontend.frame);
     }
@@ -92,38 +94,44 @@ public class FrontendMainTest {
 
 
     @Test
-    void testLanguageSwitchToEnglishUpdateVisibleElements() {
-        // Setze Sprache auf Englisch
-        frontend = GuiActionRunner.execute(() -> {
-                    frontend.setLanguage("en");
-                    return frontend;
-        });
+    void testButtonLabelsAreInEnglish() {
+        assertEquals("Today", frontend.todayButton.getText(), "Today button label incorrect");
+        assertEquals("Create", frontend.createButton.getText(), "Create button label incorrect");
+        assertEquals("Edit", frontend.editButton.getText(), "Edit button label incorrect");
+        assertEquals("Delete", frontend.deleteButton.getText(), "Delete button label incorrect");
+    }
 
-        assertEquals("Today", frontend.todayButton.getText());
-        assertEquals("Create", frontend.createButton.getText());
-        assertEquals("Edit", frontend.editButton.getText());
-        assertEquals("Delete", frontend.deleteButton.getText());
-        assertEquals("Calendar App", frontend.frame.getTitle());
-        // Überprüfe Monatslabel (z.B. "May 2025" o. ä.)
-        String expectedMonth = LocalDate.now()
-                .getMonth()
-                .getDisplayName(TextStyle.FULL, Locale.ENGLISH);
+    @Test
+    void testFrameTitleIsInEnglish() {
+        assertEquals("Calendar App", frontend.frame.getTitle(), "Frame title should be 'Calendar App'");
+    }
 
-        String monthLabelText = frontend.monthLabel.getText().toLowerCase(Locale.ROOT);
-        assertTrue(monthLabelText.toLowerCase().contains(expectedMonth.toLowerCase()),
-                "Month label should contain '" + expectedMonth + "', but was '" + monthLabelText + "'");
+    @Test
+    void testMonthLabelIsCurrentEnglishMonth() {
+        String expectedMonth = LocalDate.now().getMonth().getDisplayName(TextStyle.FULL, Locale.ENGLISH).toLowerCase(Locale.ROOT);
+        String actualLabel = frontend.monthLabel.getText().toLowerCase(Locale.ROOT);
 
-        // Überprüfe Wochentage in calendarPanel
-        boolean weekdayLabelFound = false;
-        for (java.awt.Component comp : frontend.calendarPanel.getComponents()) {
-            if (comp instanceof JLabel label) {
-                if (label.getText().equals("Monday") || label.getText().equals("Tuesday")) {
-                    weekdayLabelFound = true;
-                    break;
-                }
-            }
+        assertTrue(actualLabel.contains(expectedMonth),
+                () -> "Month label should contain '" + expectedMonth + "', but was '" + actualLabel + "'");
+    }
+
+    @Test
+    void testCalendarDisplaysWeekdayLabelsInEnglish() {
+        List<String> expectedDays = List.of("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday");
+
+        List<String> actualLabels = getWeekdayLabelsFromCalendar();
+
+        for (String day : expectedDays) {
+            assertTrue(actualLabels.contains(day),
+                    () -> "Expected weekday '" + day + "' not found in calendar panel. Found: " + actualLabels);
         }
-        assertTrue(weekdayLabelFound, "Expected weekday label in English not found.");
+    }
+
+    private List<String> getWeekdayLabelsFromCalendar() {
+        return java.util.Arrays.stream(frontend.calendarPanel.getComponents())
+                .filter(JLabel.class::isInstance)
+                .map(c -> ((JLabel) c).getText())
+                .toList();
     }
 
     @Test
