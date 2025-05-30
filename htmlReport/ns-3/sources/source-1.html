@@ -1,0 +1,386 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > FileDatabase</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.calendar.database</a>
+</div>
+
+<h1>Coverage Summary for Class: FileDatabase (com.calendar.database)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">FileDatabase</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/16)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/76)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/120)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.calendar.database;
+&nbsp;
+&nbsp;import com.calendar.Calendar;
+&nbsp;import com.calendar.Entry;
+&nbsp;import com.calendar.enums.Category;
+&nbsp;import com.calendar.enums.Priority;
+&nbsp;import com.calendar.enums.Status;
+&nbsp;import com.calendar.interfaces.Database;
+&nbsp;
+&nbsp;import java.io.IOException;
+&nbsp;import java.nio.file.Files;
+&nbsp;import java.nio.file.Path;
+&nbsp;import java.nio.file.Paths;
+&nbsp;import java.nio.file.StandardOpenOption;
+&nbsp;import java.time.ZonedDateTime;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.Collections;
+&nbsp;import java.util.List;
+&nbsp;import java.util.UUID;
+&nbsp;import java.util.logging.Logger;
+&nbsp;
+&nbsp;public class FileDatabase implements Database {
+<b class="nc">&nbsp;    private static final Logger logger = Logger.getLogger(FileDatabase.class.getName());</b>
+&nbsp;    private final Path databasePath;
+&nbsp;
+<b class="nc">&nbsp;    public FileDatabase(String directory) {</b>
+<b class="nc">&nbsp;        this.databasePath = Paths.get(directory);</b>
+<b class="nc">&nbsp;        createTables();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public boolean save(Calendar calendar) {
+&nbsp;        try {
+&nbsp;            // Delete existing entries for the calendar
+<b class="nc">&nbsp;            deleteEntriesByCalendarId(calendar.getUuid());</b>
+&nbsp;
+&nbsp;            // Check if calendar exists
+<b class="nc">&nbsp;            List&lt;String&gt; calendarLines = Files.readAllLines(databasePath.resolve(&quot;calendars.csv&quot;));</b>
+<b class="nc">&nbsp;            boolean calendarExists = false;</b>
+<b class="nc">&nbsp;            for (String line : calendarLines.subList(1, calendarLines.size())) {</b>
+<b class="nc">&nbsp;                if (line.split(&quot;,&quot;)[0].equals(calendar.getUuid().toString())) {</b>
+<b class="nc">&nbsp;                    calendarExists = true;</b>
+&nbsp;                    break;
+&nbsp;                }
+&nbsp;            }
+&nbsp;
+&nbsp;            // Append or update calendar
+<b class="nc">&nbsp;            if (calendarExists) {</b>
+<b class="nc">&nbsp;                updateCalendar(calendar.getUuid(), calendar);</b>
+&nbsp;            } else {
+<b class="nc">&nbsp;                List&lt;String&gt; lines = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;                lines.add(calendar.getUuid() + &quot;,&quot; + calendar.getName() + &quot;,&quot; + calendar.getDescription() + &quot;,&quot; + calendar.getCreatedAt());</b>
+<b class="nc">&nbsp;                Files.write(databasePath.resolve(&quot;calendars.csv&quot;), lines, StandardOpenOption.APPEND);</b>
+&nbsp;            }
+&nbsp;
+&nbsp;            // Save entries
+<b class="nc">&nbsp;            for (Entry entry : calendar.getEntries()) {</b>
+<b class="nc">&nbsp;                save(entry, calendar.getUuid());</b>
+&nbsp;            }
+<b class="nc">&nbsp;            return true;</b>
+&nbsp;        } catch (IOException e) {
+<b class="nc">&nbsp;            logger.severe(&quot;Error saving calendar: &quot; + e.getMessage());</b>
+<b class="nc">&nbsp;            return false;</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public boolean save(Entry entry, UUID calendarId) {
+&nbsp;        try {
+&nbsp;            // Check if entry exists
+<b class="nc">&nbsp;            List&lt;String&gt; entryLines = Files.readAllLines(databasePath.resolve(&quot;entries.csv&quot;));</b>
+<b class="nc">&nbsp;            boolean entryExists = false;</b>
+<b class="nc">&nbsp;            for (String line : entryLines.subList(1, entryLines.size())) {</b>
+<b class="nc">&nbsp;                if (line.split(&quot;,&quot;)[0].equals(entry.getUuid().toString())) {</b>
+<b class="nc">&nbsp;                    entryExists = true;</b>
+&nbsp;                    break;
+&nbsp;                }
+&nbsp;            }
+&nbsp;
+&nbsp;            // Append or update entry
+<b class="nc">&nbsp;            if (entryExists) {</b>
+<b class="nc">&nbsp;                updateEntry(entry.getUuid(), entry);</b>
+&nbsp;            } else {
+<b class="nc">&nbsp;                List&lt;String&gt; lines = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;                lines.add(entry.getUuid() + &quot;,&quot; + entry.getTitle() + &quot;,&quot; + entry.getDescription() + &quot;,&quot; + entry.getDateAndTime() + &quot;,&quot; + entry.getLocation() + &quot;,&quot; + (entry.getCategory() != null ? entry.getCategory().name() : &quot;&quot;) + &quot;,&quot; + (entry.getPriority() != null ? entry.getPriority().name() : &quot;&quot;) + &quot;,&quot; + (entry.getStatus() != null ? entry.getStatus().name() : &quot;&quot;) + &quot;,&quot; + entry.getNotes() + &quot;,&quot; + entry.getCreatedAt() + &quot;,&quot; + calendarId);</b>
+<b class="nc">&nbsp;                Files.write(databasePath.resolve(&quot;entries.csv&quot;), lines, StandardOpenOption.APPEND);</b>
+&nbsp;            }
+<b class="nc">&nbsp;            return true;</b>
+&nbsp;        } catch (IOException e) {
+<b class="nc">&nbsp;            logger.severe(&quot;Error saving entry: &quot; + e.getMessage());</b>
+<b class="nc">&nbsp;            return false;</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public boolean updateEntry(UUID id, Entry entry) {
+<b class="nc">&nbsp;        deleteEntry(id);</b>
+<b class="nc">&nbsp;        return save(entry, id);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public boolean updateCalendar(UUID id, Calendar calendar) {
+<b class="nc">&nbsp;        deleteCalendar(id);</b>
+<b class="nc">&nbsp;        return save(calendar);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private void deleteEntriesByCalendarId(UUID calendarId) {
+&nbsp;        try {
+<b class="nc">&nbsp;            List&lt;String&gt; lines = Files.readAllLines(databasePath.resolve(&quot;entries.csv&quot;));</b>
+<b class="nc">&nbsp;            List&lt;String&gt; updatedLines = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;            updatedLines.add(lines.get(0));</b>
+<b class="nc">&nbsp;            for (String line : lines.subList(1, lines.size())) {</b>
+<b class="nc">&nbsp;                if (!line.split(&quot;,&quot;)[10].equals(calendarId.toString())) {</b>
+<b class="nc">&nbsp;                    updatedLines.add(line);</b>
+&nbsp;                }
+&nbsp;            }
+<b class="nc">&nbsp;            Files.write(databasePath.resolve(&quot;entries.csv&quot;), updatedLines, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);</b>
+&nbsp;        } catch (IOException e) {
+<b class="nc">&nbsp;            logger.severe(&quot;Error deleting entries by calendar ID: &quot; + e.getMessage());</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public boolean deleteEntry(Entry entry) {
+<b class="nc">&nbsp;        return deleteEntry(entry.getUuid());</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public boolean deleteCalendar(Calendar calendar) {
+<b class="nc">&nbsp;        return deleteCalendar(calendar.getUuid());</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public boolean deleteEntry(UUID id) {
+&nbsp;        try {
+<b class="nc">&nbsp;            List&lt;String&gt; lines = Files.readAllLines(databasePath.resolve(&quot;entries.csv&quot;));</b>
+<b class="nc">&nbsp;            List&lt;String&gt; updatedLines = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;            updatedLines.add(lines.get(0));</b>
+<b class="nc">&nbsp;            for (String line : lines.subList(1, lines.size())) {</b>
+<b class="nc">&nbsp;                if (!line.split(&quot;,&quot;)[0].equals(id.toString())) {</b>
+<b class="nc">&nbsp;                    updatedLines.add(line);</b>
+&nbsp;                }
+&nbsp;            }
+<b class="nc">&nbsp;            Files.write(databasePath.resolve(&quot;entries.csv&quot;), updatedLines, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);</b>
+<b class="nc">&nbsp;            return true;</b>
+&nbsp;        } catch (IOException e) {
+<b class="nc">&nbsp;            logger.severe(&quot;Error deleting entry: &quot; + e.getMessage());</b>
+<b class="nc">&nbsp;            return false;</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public boolean deleteCalendar(UUID id) {
+&nbsp;        try {
+<b class="nc">&nbsp;            List&lt;String&gt; lines = Files.readAllLines(databasePath.resolve(&quot;calendars.csv&quot;));</b>
+<b class="nc">&nbsp;            List&lt;String&gt; updatedLines = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;            updatedLines.add(lines.get(0));</b>
+<b class="nc">&nbsp;            for (String line : lines.subList(1, lines.size())) {</b>
+<b class="nc">&nbsp;                if (!line.split(&quot;,&quot;)[0].equals(id.toString())) {</b>
+<b class="nc">&nbsp;                    updatedLines.add(line);</b>
+&nbsp;                }
+&nbsp;            }
+<b class="nc">&nbsp;            Files.write(databasePath.resolve(&quot;calendars.csv&quot;), updatedLines, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);</b>
+&nbsp;
+&nbsp;            // Delete all entries for the calendar
+<b class="nc">&nbsp;            deleteEntriesByCalendarId(id);</b>
+<b class="nc">&nbsp;            return true;</b>
+&nbsp;        } catch (IOException e) {
+<b class="nc">&nbsp;            logger.severe(&quot;Error deleting calendar: &quot; + e.getMessage());</b>
+<b class="nc">&nbsp;            return false;</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public Entry readEntry(UUID id) {
+&nbsp;        try {
+<b class="nc">&nbsp;            List&lt;String&gt; lines = Files.readAllLines(databasePath.resolve(&quot;entries.csv&quot;));</b>
+<b class="nc">&nbsp;            for (String line : lines.subList(1, lines.size())) {</b>
+<b class="nc">&nbsp;                String[] parts = line.split(&quot;,&quot;);</b>
+<b class="nc">&nbsp;                if (parts[0].equals(id.toString())) {</b>
+<b class="nc">&nbsp;                    return new Entry(UUID.fromString(parts[0]), parts[1], parts[2], ZonedDateTime.parse(parts[3]), parts[4], parts[5].isEmpty() ? null : Category.valueOf(parts[5]), parts[6].isEmpty() ? null : Priority.valueOf(parts[6]), parts[7].isEmpty() ? null : Status.valueOf(parts[7]), parts[8], ZonedDateTime.parse(parts[9]));</b>
+&nbsp;                }
+&nbsp;            }
+&nbsp;        } catch (IOException e) {
+<b class="nc">&nbsp;            logger.severe(&quot;Error reading entry: &quot; + e.getMessage());</b>
+&nbsp;        }
+<b class="nc">&nbsp;        return null;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public Calendar readCalendar(UUID id) {
+&nbsp;        try {
+<b class="nc">&nbsp;            List&lt;String&gt; lines = Files.readAllLines(databasePath.resolve(&quot;calendars.csv&quot;));</b>
+<b class="nc">&nbsp;            for (String line : lines.subList(1, lines.size())) {</b>
+<b class="nc">&nbsp;                String[] parts = line.split(&quot;,&quot;);</b>
+<b class="nc">&nbsp;                if (parts[0].equals(id.toString())) {</b>
+<b class="nc">&nbsp;                    Calendar calendar = new Calendar(UUID.fromString(parts[0]), parts[1], parts[2], new Entry[0], ZonedDateTime.parse(parts[3]));</b>
+<b class="nc">&nbsp;                    List&lt;Entry&gt; entries = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;                    List&lt;String&gt; entryLines = Files.readAllLines(databasePath.resolve(&quot;entries.csv&quot;));</b>
+<b class="nc">&nbsp;                    for (String entryLine : entryLines.subList(1, entryLines.size())) {</b>
+<b class="nc">&nbsp;                        String[] entryParts = entryLine.split(&quot;,&quot;);</b>
+<b class="nc">&nbsp;                        if (entryParts[10].equals(id.toString())) {</b>
+<b class="nc">&nbsp;                            entries.add(new Entry(UUID.fromString(entryParts[0]), entryParts[1], entryParts[2], ZonedDateTime.parse(entryParts[3]), entryParts[4], entryParts[5].isEmpty() ? null : Category.valueOf(entryParts[5]), entryParts[6].isEmpty() ? null : Priority.valueOf(entryParts[6]), entryParts[7].isEmpty() ? null : Status.valueOf(entryParts[7]), entryParts[8], ZonedDateTime.parse(entryParts[9])));</b>
+&nbsp;                        }
+&nbsp;                    }
+<b class="nc">&nbsp;                    calendar.setEntries(entries.toArray(new Entry[0]));</b>
+<b class="nc">&nbsp;                    return calendar;</b>
+&nbsp;                }
+&nbsp;            }
+&nbsp;        } catch (IOException e) {
+<b class="nc">&nbsp;            logger.severe(&quot;Error reading calendar: &quot; + e.getMessage());</b>
+&nbsp;        }
+<b class="nc">&nbsp;        return null;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public Entry[] listEntries() {
+&nbsp;        try {
+<b class="nc">&nbsp;            List&lt;String&gt; lines = Files.readAllLines(databasePath.resolve(&quot;entries.csv&quot;));</b>
+<b class="nc">&nbsp;            List&lt;Entry&gt; entries = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;            for (String line : lines.subList(1, lines.size())) {</b>
+<b class="nc">&nbsp;                String[] parts = line.split(&quot;,&quot;);</b>
+<b class="nc">&nbsp;                entries.add(new Entry(UUID.fromString(parts[0]), parts[1], parts[2], ZonedDateTime.parse(parts[3]), parts[4], parts[5].isEmpty() ? null : Category.valueOf(parts[5]), parts[6].isEmpty() ? null : Priority.valueOf(parts[6]), parts[7].isEmpty() ? null : Status.valueOf(parts[7]), parts[8], ZonedDateTime.parse(parts[9])));</b>
+&nbsp;            }
+<b class="nc">&nbsp;            return entries.toArray(new Entry[0]);</b>
+&nbsp;        } catch (IOException e) {
+<b class="nc">&nbsp;            logger.severe(&quot;Error listing entries: &quot; + e.getMessage());</b>
+<b class="nc">&nbsp;            return new Entry[0];</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public Calendar[] listCalendars() {
+&nbsp;        try {
+<b class="nc">&nbsp;            List&lt;String&gt; lines = Files.readAllLines(databasePath.resolve(&quot;calendars.csv&quot;));</b>
+<b class="nc">&nbsp;            List&lt;Calendar&gt; calendars = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;            for (String line : lines.subList(1, lines.size())) {</b>
+<b class="nc">&nbsp;                String[] parts = line.split(&quot;,&quot;);</b>
+<b class="nc">&nbsp;                Calendar calendar = new Calendar(UUID.fromString(parts[0]), parts[1], parts[2], new Entry[0], ZonedDateTime.parse(parts[3]));</b>
+<b class="nc">&nbsp;                List&lt;Entry&gt; entries = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;                List&lt;String&gt; entryLines = Files.readAllLines(databasePath.resolve(&quot;entries.csv&quot;));</b>
+<b class="nc">&nbsp;                for (String entryLine : entryLines.subList(1, entryLines.size())) {</b>
+<b class="nc">&nbsp;                    String[] entryParts = entryLine.split(&quot;,&quot;);</b>
+<b class="nc">&nbsp;                    if (entryParts[10].equals(parts[0])) {</b>
+<b class="nc">&nbsp;                        entries.add(new Entry(UUID.fromString(entryParts[0]), entryParts[1], entryParts[2], ZonedDateTime.parse(entryParts[3]), entryParts[4], entryParts[5].isEmpty() ? null : Category.valueOf(entryParts[5]), entryParts[6].isEmpty() ? null : Priority.valueOf(entryParts[6]), entryParts[7].isEmpty() ? null : Status.valueOf(entryParts[7]), entryParts[8], ZonedDateTime.parse(entryParts[9])));</b>
+&nbsp;                    }
+&nbsp;                }
+<b class="nc">&nbsp;                calendar.setEntries(entries.toArray(new Entry[0]));</b>
+<b class="nc">&nbsp;                calendars.add(calendar);</b>
+&nbsp;            }
+<b class="nc">&nbsp;            return calendars.toArray(new Calendar[0]);</b>
+&nbsp;        } catch (IOException e) {
+<b class="nc">&nbsp;            logger.severe(&quot;Error listing calendars: &quot; + e.getMessage());</b>
+<b class="nc">&nbsp;            return new Calendar[0];</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public boolean createTables() {
+&nbsp;        try {
+<b class="nc">&nbsp;            Files.createDirectories(databasePath);</b>
+<b class="nc">&nbsp;            Files.write(databasePath.resolve(&quot;calendars.csv&quot;), Collections.singletonList(&quot;uuid,name,description,createdAt&quot;), StandardOpenOption.CREATE);</b>
+<b class="nc">&nbsp;            Files.write(databasePath.resolve(&quot;entries.csv&quot;), Collections.singletonList(&quot;uuid,title,description,dateAndTime,location,category,priority,status,notes,createdAt,calendarId&quot;), StandardOpenOption.CREATE);</b>
+<b class="nc">&nbsp;            return true;</b>
+&nbsp;        } catch (IOException e) {
+<b class="nc">&nbsp;            logger.severe(&quot;Error creating tables: &quot; + e.getMessage());</b>
+<b class="nc">&nbsp;            return false;</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-05-30 15:49</div>
+</div>
+</body>
+</html>

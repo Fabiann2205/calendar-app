@@ -1,0 +1,245 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > JavaArrayDatabase</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.calendar.database</a>
+</div>
+
+<h1>Coverage Summary for Class: JavaArrayDatabase (com.calendar.database)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">JavaArrayDatabase</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/14)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/16)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/56)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.calendar.database;
+&nbsp;
+&nbsp;import com.calendar.Calendar;
+&nbsp;import com.calendar.Entry;
+&nbsp;import com.calendar.interfaces.Database;
+&nbsp;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.List;
+&nbsp;import java.util.UUID;
+&nbsp;
+<b class="nc">&nbsp;public class JavaArrayDatabase implements Database {</b>
+<b class="nc">&nbsp;    private final List&lt;Calendar&gt; calendars = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;    private final List&lt;Entry&gt; entries = new ArrayList&lt;&gt;();</b>
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public boolean save(Calendar calendar) {
+<b class="nc">&nbsp;        deleteCalendar(calendar.getUuid()); // Entferne vorhandene Kalender mit derselben UUID</b>
+<b class="nc">&nbsp;        calendars.add(calendar);</b>
+<b class="nc">&nbsp;        for (Entry entry : calendar.getEntries()) {</b>
+<b class="nc">&nbsp;            save(entry, calendar.getUuid());</b>
+&nbsp;        }
+<b class="nc">&nbsp;        return true;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public boolean save(Entry entry, UUID calendarId) {
+<b class="nc">&nbsp;        deleteEntry(entry.getUuid()); // Entferne vorhandene Einträge mit derselben UUID</b>
+<b class="nc">&nbsp;        entry = new Entry(</b>
+<b class="nc">&nbsp;                entry.getUuid(),</b>
+<b class="nc">&nbsp;                entry.getTitle(),</b>
+<b class="nc">&nbsp;                entry.getDescription(),</b>
+<b class="nc">&nbsp;                entry.getDateAndTime(),</b>
+<b class="nc">&nbsp;                entry.getLocation(),</b>
+<b class="nc">&nbsp;                entry.getCategory(),</b>
+<b class="nc">&nbsp;                entry.getPriority(),</b>
+<b class="nc">&nbsp;                entry.getStatus(),</b>
+<b class="nc">&nbsp;                entry.getNotes(),</b>
+<b class="nc">&nbsp;                entry.getCreatedAt()</b>
+&nbsp;        );
+<b class="nc">&nbsp;        entries.add(entry);</b>
+<b class="nc">&nbsp;        return true;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public Entry readEntry(UUID id) {
+<b class="nc">&nbsp;        return entries.stream()</b>
+<b class="nc">&nbsp;                .filter(entry -&gt; entry.getUuid().equals(id))</b>
+<b class="nc">&nbsp;                .findFirst()</b>
+<b class="nc">&nbsp;                .orElse(null);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public Calendar readCalendar(UUID id) {
+<b class="nc">&nbsp;        Calendar calendar = calendars.stream()</b>
+<b class="nc">&nbsp;                .filter(c -&gt; c.getUuid().equals(id))</b>
+<b class="nc">&nbsp;                .findFirst()</b>
+<b class="nc">&nbsp;                .orElse(null);</b>
+<b class="nc">&nbsp;        if (calendar != null) {</b>
+<b class="nc">&nbsp;            List&lt;Entry&gt; calendarEntries = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;            for (Entry entry : entries) {</b>
+<b class="nc">&nbsp;                if (entry.getNotes() != null &amp;&amp; entry.getNotes().equals(id.toString())) {</b>
+<b class="nc">&nbsp;                    calendarEntries.add(entry);</b>
+&nbsp;                }
+&nbsp;            }
+<b class="nc">&nbsp;            calendar.setEntries(calendarEntries.toArray(new Entry[0]));</b>
+&nbsp;        }
+<b class="nc">&nbsp;        return calendar;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public boolean deleteEntry(Entry entry) {
+<b class="nc">&nbsp;        return deleteEntry(entry.getUuid());</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public boolean deleteCalendar(Calendar calendar) {
+<b class="nc">&nbsp;        return deleteCalendar(calendar.getUuid());</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public boolean deleteEntry(UUID id) {
+<b class="nc">&nbsp;        return entries.removeIf(entry -&gt; entry.getUuid().equals(id));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public boolean deleteCalendar(UUID id) {
+<b class="nc">&nbsp;        boolean removed = calendars.removeIf(calendar -&gt; calendar.getUuid().equals(id));</b>
+<b class="nc">&nbsp;        if (removed) {</b>
+<b class="nc">&nbsp;            entries.removeIf(entry -&gt; entry.getNotes() != null &amp;&amp; entry.getNotes().equals(id.toString()));</b>
+&nbsp;        }
+<b class="nc">&nbsp;        return removed;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public boolean updateEntry(UUID id, Entry entry) {
+<b class="nc">&nbsp;        deleteEntry(id);</b>
+<b class="nc">&nbsp;        return save(entry, UUID.fromString(entry.getNotes()));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public boolean updateCalendar(UUID id, Calendar calendar) {
+<b class="nc">&nbsp;        deleteCalendar(id);</b>
+<b class="nc">&nbsp;        return save(calendar);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public Entry[] listEntries() {
+<b class="nc">&nbsp;        return entries.toArray(new Entry[0]);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public Calendar[] listCalendars() {
+<b class="nc">&nbsp;        return calendars.toArray(new Calendar[0]);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public boolean createTables() {
+<b class="nc">&nbsp;        calendars.clear();</b>
+<b class="nc">&nbsp;        entries.clear();</b>
+&nbsp;
+&nbsp;        // Initialen Kalender erstellen, falls keiner existiert
+<b class="nc">&nbsp;        if (calendars.isEmpty()) {</b>
+<b class="nc">&nbsp;            Calendar initialCalendar = new Calendar(&quot;Calendar&quot;, &quot;Default Calendar&quot;);</b>
+<b class="nc">&nbsp;            calendars.add(initialCalendar);</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        return true;</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-05-30 15:49</div>
+</div>
+</body>
+</html>

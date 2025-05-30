@@ -1,0 +1,143 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > de</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.calendar.frontend.swing.languages</a>
+</div>
+
+<h1>Coverage Summary for Class: de (com.calendar.frontend.swing.languages)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">de</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (4/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (28/28)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.calendar.frontend.swing.languages;
+&nbsp;
+<b class="fc">&nbsp;public enum de implements Translation {</b>
+<b class="fc">&nbsp;    Mon(&quot;Montag&quot;),</b>
+<b class="fc">&nbsp;    Tue(&quot;Dienstag&quot;),</b>
+<b class="fc">&nbsp;    Wed(&quot;Mittwoch&quot;),</b>
+<b class="fc">&nbsp;    Thu(&quot;Donnerstag&quot;),</b>
+<b class="fc">&nbsp;    Fri(&quot;Freitag&quot;),</b>
+<b class="fc">&nbsp;    Sat(&quot;Samstag&quot;),</b>
+<b class="fc">&nbsp;    Sun(&quot;Sonntag&quot;),</b>
+<b class="fc">&nbsp;    Today(&quot;Heute&quot;),</b>
+<b class="fc">&nbsp;    Title(&quot;Kalender-App&quot;),</b>
+<b class="fc">&nbsp;    Create(&quot;Erstellen&quot;),</b>
+<b class="fc">&nbsp;    Edit(&quot;Bearbeiten&quot;),</b>
+<b class="fc">&nbsp;    Delete(&quot;Löschen&quot;),</b>
+<b class="fc">&nbsp;    Save(&quot;Speichern&quot;),</b>
+<b class="fc">&nbsp;    Cancel(&quot;Abbrechen&quot;),</b>
+<b class="fc">&nbsp;    Date(&quot;Fälligkeitsdatum&quot;),</b>
+<b class="fc">&nbsp;    EditTitle(&quot;Title&quot;),</b>
+<b class="fc">&nbsp;    DeleteConfirmText(&quot;Sicher, dass du den Eintrag löschen willst?&quot;),</b>
+<b class="fc">&nbsp;    Description(&quot;Beschreibung&quot;),</b>
+<b class="fc">&nbsp;    Location(&quot;Standort&quot;),</b>
+<b class="fc">&nbsp;    Category(&quot;Kategorie&quot;),</b>
+<b class="fc">&nbsp;    Priority(&quot;Priorität&quot;),</b>
+<b class="fc">&nbsp;    Status(&quot;Status&quot;),</b>
+<b class="fc">&nbsp;    Notes(&quot;Notizen&quot;),</b>
+<b class="fc">&nbsp;    CreationDate(&quot;Erstellt am&quot;);</b>
+&nbsp;
+&nbsp;    private final String translation;
+&nbsp;
+<b class="fc">&nbsp;    de(String translation) {</b>
+<b class="fc">&nbsp;        this.translation = translation;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public String getTranslation() {
+<b class="fc">&nbsp;        return translation;</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-05-30 15:49</div>
+</div>
+</body>
+</html>

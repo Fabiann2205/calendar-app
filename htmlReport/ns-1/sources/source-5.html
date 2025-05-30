@@ -1,0 +1,134 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > EntryResource</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.calendar</a>
+</div>
+
+<h1>Coverage Summary for Class: EntryResource (com.calendar)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">EntryResource</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/7)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.calendar;
+&nbsp;
+&nbsp;import com.calendar.enums.Category;
+&nbsp;import com.calendar.enums.Priority;
+&nbsp;import com.calendar.enums.Status;
+&nbsp;
+&nbsp;import java.time.ZonedDateTime;
+&nbsp;
+&nbsp;public class EntryResource extends Entry {
+&nbsp;    private final Entry entry;
+&nbsp;
+&nbsp;    public EntryResource(String title, String description, ZonedDateTime dateAndTime, String location, Category category, Priority priority, Status status, String notes) {
+<b class="nc">&nbsp;        super(title, description, dateAndTime, location, category, priority, status, notes);</b>
+<b class="nc">&nbsp;        this.entry = new Entry(title, description, dateAndTime, location, category, priority, status, notes);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public EntryResource(String title, ZonedDateTime dateAndTime) {
+<b class="nc">&nbsp;        super(title, dateAndTime);</b>
+<b class="nc">&nbsp;        this.entry = new Entry(title, dateAndTime);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public EntryResource(String title, ZonedDateTime dateAndTime, String location) {
+<b class="nc">&nbsp;        super(title, dateAndTime, location);</b>
+<b class="nc">&nbsp;        this.entry = new Entry(title, dateAndTime, location);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public Entry getEntry() {
+<b class="nc">&nbsp;        return entry;</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-05-30 15:49</div>
+</div>
+</body>
+</html>

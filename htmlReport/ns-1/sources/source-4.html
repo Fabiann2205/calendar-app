@@ -1,0 +1,334 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > Entry</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.calendar</a>
+</div>
+
+<h1>Coverage Summary for Class: Entry (com.calendar)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Entry</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    80%
+  </span>
+  <span class="absValue">
+    (20/25)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    20%
+  </span>
+  <span class="absValue">
+    (4/20)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    36,5%
+  </span>
+  <span class="absValue">
+    (27/74)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.calendar;
+&nbsp;
+&nbsp;import com.calendar.enums.Category;
+&nbsp;import com.calendar.enums.Priority;
+&nbsp;import com.calendar.enums.Status;
+&nbsp;
+&nbsp;import java.time.ZonedDateTime;
+&nbsp;import java.util.Objects;
+&nbsp;import java.util.UUID;
+&nbsp;
+&nbsp;/**
+&nbsp; * Represents an entry with a title, description, date and time, location, category, priority, status, and notes.
+&nbsp; * &lt;p&gt;
+&nbsp; * The `title` and `dateAndTime` fields must not be null.
+&nbsp; */
+&nbsp;public class Entry {
+&nbsp;    private final UUID uuid;
+&nbsp;    private String title;
+&nbsp;    private String description;
+&nbsp;    private ZonedDateTime dateAndTime;
+&nbsp;    private String location;
+&nbsp;    private Category category;
+&nbsp;    private Priority priority;
+&nbsp;    private Status status;
+&nbsp;    private String notes;
+&nbsp;    private final ZonedDateTime createdAt;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Constructs a new Entry with the specified title, description, date and time, location, category, priority, status, and notes.
+&nbsp;     *
+&nbsp;     * @param title       the title of the entry, must not be null
+&nbsp;     * @param description the description of the entry
+&nbsp;     * @param dateAndTime the date and time of the entry, must not be null
+&nbsp;     * @param location    the location of the entry
+&nbsp;     * @param category    the category of the entry
+&nbsp;     * @param priority    the priority of the entry
+&nbsp;     * @param status      the status of the entry
+&nbsp;     * @param notes       additional notes for the entry
+&nbsp;     * @throws IllegalArgumentException if title or dateAndTime is null
+&nbsp;     */
+<b class="nc">&nbsp;    public Entry(String title, String description, ZonedDateTime dateAndTime, String location, Category category, Priority priority, Status status, String notes) {</b>
+<b class="nc">&nbsp;        if (title == null || dateAndTime == null) {</b>
+<b class="nc">&nbsp;            throw new IllegalArgumentException(&quot;Title and dateAndTime must not be null&quot;);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        this.uuid = UUID.randomUUID();</b>
+<b class="nc">&nbsp;        this.title = title;</b>
+<b class="nc">&nbsp;        this.description = description;</b>
+<b class="nc">&nbsp;        this.dateAndTime = dateAndTime;</b>
+<b class="nc">&nbsp;        this.location = location;</b>
+<b class="nc">&nbsp;        this.category = category;</b>
+<b class="nc">&nbsp;        this.priority = priority;</b>
+<b class="nc">&nbsp;        this.status = status;</b>
+<b class="nc">&nbsp;        this.notes = notes;</b>
+<b class="nc">&nbsp;        this.createdAt = ZonedDateTime.now();</b>
+&nbsp;    }
+&nbsp;
+<b class="nc">&nbsp;    public Entry(UUID uuid, String title, String description, ZonedDateTime dateAndTime, String location, Category category, Priority priority, Status status, String notes, ZonedDateTime createdAt) {</b>
+<b class="nc">&nbsp;        if (title == null || dateAndTime == null) {</b>
+<b class="nc">&nbsp;            throw new IllegalArgumentException(&quot;Title and dateAndTime must not be null&quot;);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        this.uuid = uuid;</b>
+<b class="nc">&nbsp;        this.title = title;</b>
+<b class="nc">&nbsp;        this.description = description;</b>
+<b class="nc">&nbsp;        this.dateAndTime = dateAndTime;</b>
+<b class="nc">&nbsp;        this.location = location;</b>
+<b class="nc">&nbsp;        this.category = category;</b>
+<b class="nc">&nbsp;        this.priority = priority;</b>
+<b class="nc">&nbsp;        this.status = status;</b>
+<b class="nc">&nbsp;        this.notes = notes;</b>
+<b class="nc">&nbsp;        this.createdAt = createdAt;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Constructs a new Entry with the specified title and date and time.
+&nbsp;     *
+&nbsp;     * @param title       the title of the entry, must not be null
+&nbsp;     * @param dateAndTime the date and time of the entry, must not be null
+&nbsp;     * @throws IllegalArgumentException if title or dateAndTime is null
+&nbsp;     */
+<b class="fc">&nbsp;    public Entry(String title, ZonedDateTime dateAndTime) {</b>
+<b class="pc">&nbsp;        if (title == null || dateAndTime == null) {</b>
+<b class="nc">&nbsp;            throw new IllegalArgumentException(&quot;Title and dateAndTime must not be null&quot;);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        this.uuid = UUID.randomUUID();</b>
+<b class="fc">&nbsp;        this.title = title;</b>
+<b class="fc">&nbsp;        this.dateAndTime = dateAndTime;</b>
+<b class="fc">&nbsp;        this.createdAt = ZonedDateTime.now();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Constructs a new Entry with the specified title, date and time, and location.
+&nbsp;     *
+&nbsp;     * @param title       the title of the entry, must not be null
+&nbsp;     * @param dateAndTime the date and time of the entry, must not be null
+&nbsp;     * @param location    the location of the entry
+&nbsp;     * @throws IllegalArgumentException if title or dateAndTime is null
+&nbsp;     */
+<b class="nc">&nbsp;    public Entry(String title, ZonedDateTime dateAndTime, String location) {</b>
+<b class="nc">&nbsp;        if (title == null || dateAndTime == null) {</b>
+<b class="nc">&nbsp;            throw new IllegalArgumentException(&quot;Title and dateAndTime must not be null&quot;);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        this.uuid = UUID.randomUUID();</b>
+<b class="nc">&nbsp;        this.title = title;</b>
+<b class="nc">&nbsp;        this.dateAndTime = dateAndTime;</b>
+<b class="nc">&nbsp;        this.location = location;</b>
+<b class="nc">&nbsp;        this.createdAt = ZonedDateTime.now();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public String getTitle() {
+<b class="fc">&nbsp;        return title;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public UUID getUuid() {
+<b class="fc">&nbsp;        return uuid;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setTitle(String title) {
+<b class="fc">&nbsp;        this.title = title;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public String getDescription() {
+<b class="fc">&nbsp;        return description;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setDescription(String description) {
+<b class="fc">&nbsp;        this.description = description;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public ZonedDateTime getDateAndTime() {
+<b class="fc">&nbsp;        return dateAndTime;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setDateAndTime(ZonedDateTime dateAndTime) {
+<b class="fc">&nbsp;        this.dateAndTime = dateAndTime;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public String getLocation() {
+<b class="fc">&nbsp;        return location;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setLocation(String location) {
+<b class="fc">&nbsp;        this.location = location;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public Category getCategory() {
+<b class="fc">&nbsp;        return category;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setCategory(Category category) {
+<b class="fc">&nbsp;        this.category = category;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public Priority getPriority() {
+<b class="fc">&nbsp;        return priority;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setPriority(Priority priority) {
+<b class="fc">&nbsp;        this.priority = priority;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public Status getStatus() {
+<b class="fc">&nbsp;        return status;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setStatus(Status status) {
+<b class="fc">&nbsp;        this.status = status;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public String getNotes() {
+<b class="fc">&nbsp;        return notes;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setNotes(String notes) {
+<b class="fc">&nbsp;        this.notes = notes;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public ZonedDateTime getCreatedAt() {
+<b class="fc">&nbsp;        return createdAt;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public String toString() {
+<b class="nc">&nbsp;        return &quot;Entry{&quot; +</b>
+&nbsp;                &quot;title=&#39;&quot; + title + &#39;\&#39;&#39; +
+&nbsp;                &quot;, description=&#39;&quot; + description + &#39;\&#39;&#39; +
+&nbsp;                &quot;, dateAndTime=&quot; + dateAndTime +
+&nbsp;                &quot;, location=&#39;&quot; + location + &#39;\&#39;&#39; +
+&nbsp;                &quot;, category=&quot; + category +
+&nbsp;                &quot;, priority=&quot; + priority +
+&nbsp;                &quot;, status=&quot; + status +
+&nbsp;                &quot;, notes=&#39;&quot; + notes + &#39;\&#39;&#39; +
+&nbsp;                &quot;, createdAt=&quot; + createdAt +
+&nbsp;                &#39;}&#39;;
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public boolean equals(Object o) {
+<b class="pc">&nbsp;        if (o == null || getClass() != o.getClass()) return false;</b>
+&nbsp;
+<b class="fc">&nbsp;        Entry entry = (Entry) o;</b>
+<b class="fc">&nbsp;        return getUuid().equals(entry.getUuid());</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public int hashCode() {
+<b class="nc">&nbsp;        int result = Objects.hashCode(getUuid());</b>
+<b class="nc">&nbsp;        result = 31 * result + Objects.hashCode(getTitle());</b>
+<b class="nc">&nbsp;        result = 31 * result + Objects.hashCode(getDescription());</b>
+<b class="nc">&nbsp;        result = 31 * result + Objects.hashCode(getDateAndTime());</b>
+<b class="nc">&nbsp;        result = 31 * result + Objects.hashCode(getLocation());</b>
+<b class="nc">&nbsp;        result = 31 * result + Objects.hashCode(getCategory());</b>
+<b class="nc">&nbsp;        result = 31 * result + Objects.hashCode(getPriority());</b>
+<b class="nc">&nbsp;        result = 31 * result + Objects.hashCode(getStatus());</b>
+<b class="nc">&nbsp;        result = 31 * result + Objects.hashCode(getNotes());</b>
+<b class="nc">&nbsp;        result = 31 * result + Objects.hashCode(getCreatedAt());</b>
+<b class="nc">&nbsp;        return result;</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-05-30 15:49</div>
+</div>
+</body>
+</html>
