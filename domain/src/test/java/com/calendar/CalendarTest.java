@@ -8,6 +8,7 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
 
 class CalendarTest {
+    
     @Test
     void testConstructorWithNameAndDescription() {
         Calendar cal = new Calendar("name", "desc");
@@ -18,6 +19,7 @@ class CalendarTest {
         assertNotNull(cal.getCreatedAt());
         assertEquals(0, cal.getEntryCount());
     }
+
     @Test
     void testSetNameAndDescription() {
         Calendar cal = new Calendar("a", "b");
@@ -27,6 +29,7 @@ class CalendarTest {
         assertEquals("newName", cal.getName());
         assertEquals("newDesc", cal.getDescription());
     }
+
     @Test
     void testAddEntryIncreasesCount() {
         Calendar cal = new Calendar("name", "desc");
@@ -35,6 +38,7 @@ class CalendarTest {
         assertEquals(1, cal.getEntryCount());
         assertEquals(entry, cal.getEntries()[0]);
     }
+
     @Test
     void testRemoveEntryWorks() {
         Entry entry = new Entry("test", ZonedDateTime.now());
@@ -55,6 +59,7 @@ class CalendarTest {
         assertFalse(cal.removeEntry(entry2));
         assertEquals(1, cal.getEntryCount());
     }
+
     @Test
     void testUpdateEntryReplacesEntry() {
         Entry original = new Entry("old", ZonedDateTime.now());
@@ -75,6 +80,7 @@ class CalendarTest {
 
         assertFalse(cal.updateEntry(notInCalendar));
     }
+
     @Test
     void testGetEntryByUuid() {
         Entry entry = new Entry("findMe", ZonedDateTime.now());
@@ -91,13 +97,19 @@ class CalendarTest {
         Calendar cal = new Calendar("name", "desc");
         assertNull(cal.getEntry(UUID.randomUUID()));
     }
+
     @Test
     void testEqualsWithSameUuid() {
         UUID id = UUID.randomUUID();
-        Calendar cal1 = new Calendar(id, "desc", "name", new Entry[]{}, ZonedDateTime.now());
-        Calendar cal2 = new Calendar(id, "desc2", "name2", new Entry[]{}, ZonedDateTime.now());
+        ZonedDateTime time = ZonedDateTime.now();
+
+        Calendar cal1 = new Calendar(id, "desc", "name", new Entry[]{}, time);
+        Calendar cal2 = new Calendar(id, "desc2", "name2", new Entry[]{}, time);
+        Calendar cal3 = new Calendar(id, "desc", "name", new Entry[]{}, time);
 
         assertEquals(cal1, cal2);
+        assertEquals(cal1.hashCode(), cal3.hashCode());
+
     }
 
     @Test
@@ -106,6 +118,7 @@ class CalendarTest {
         Calendar cal2 = new Calendar("desc", "name");
 
         assertNotEquals(cal1, cal2);
+        assertNotEquals(cal1.hashCode(), cal2.hashCode());
     }
 
 }

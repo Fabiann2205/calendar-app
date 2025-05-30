@@ -94,7 +94,6 @@ public class FrontendMainTest {
     @Test
     void testLanguageSwitchToEnglishUpdateVisibleElements() {
         // Setze Sprache auf Englisch
-
         frontend = GuiActionRunner.execute(() -> {
                     frontend.setLanguage("en");
                     return frontend;

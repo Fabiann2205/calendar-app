@@ -39,6 +39,7 @@ class CoreTest {
 
     @Test
     void testAddEntry_callsSaveAndReturnsTrue() {
+        //Arrange
         core.calendars.add(calendar);
 
         // Act
@@ -73,7 +74,7 @@ class CoreTest {
         core.removeEntry(entry2, calendar.getUuid());
         assertEquals(1, calendar.getEntries().length);
 
-        verify(mockDatabase, times(3)).save(calendar); // falls removeEntry auch speichert
+        verify(mockDatabase, times(3)).save(calendar);
 
     }
 
@@ -90,7 +91,6 @@ class CoreTest {
         core.calendars.add(calendar);
         core.addEntry(entry, calendar.getUuid());
 
-        // Ursprüngliche Werte sichern
         String oldTitle = entry.getTitle();
         String oldDescription = entry.getDescription();
         ZonedDateTime oldDateTime = entry.getDateAndTime();
@@ -100,7 +100,6 @@ class CoreTest {
         Status oldStatus = entry.getStatus();
         String oldNotes = entry.getNotes();
 
-        // Neue Werte setzen
         String newTitle = oldTitle + " edited";
         String newDescription = oldDescription + " updated";
         ZonedDateTime newDateTime = oldDateTime.plusDays(1);
@@ -133,7 +132,6 @@ class CoreTest {
         assertEquals(newStatus, updated.getStatus());
         assertEquals(newNotes, updated.getNotes());
 
-        // createdAt sollte sich nicht ändern
         assertEquals(entry.getCreatedAt(), updated.getCreatedAt());
     }
 
