@@ -1,5 +1,7 @@
 package com.calendar;
 
+import com.calendar.database.JavaArrayDatabase;
+import com.calendar.database.FileDatabase;
 import com.calendar.database.SQLiteDatabase;
 import com.calendar.frontend.swing.FrontendMain;
 
@@ -14,5 +16,8 @@ public class Main {
 
         // use JavaArrayDatabase as database
         //Core core = new Core(new JavaArrayDatabase(), new FrontendMain("de"));
+
+        // use FileDatabase as database
+        // Core core = new Core(new FileDatabase("filedb"), new FrontendMain("de"));
     }
 }

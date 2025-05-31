@@ -78,7 +78,7 @@ public class FileDatabase implements Database {
 
             // Append or update entry
             if (entryExists) {
-                updateEntry(entry.getUuid(), entry);
+                updateEntry(entry.getUuid(), entry, calendarId);
             } else {
                 List<String> lines = new ArrayList<>();
                 lines.add(entry.getUuid() + "," + entry.getTitle() + "," + entry.getDescription() + "," + entry.getDateAndTime() + "," + entry.getLocation() + "," + (entry.getCategory() != null ? entry.getCategory().name() : "") + "," + (entry.getPriority() != null ? entry.getPriority().name() : "") + "," + (entry.getStatus() != null ? entry.getStatus().name() : "") + "," + entry.getNotes() + "," + entry.getCreatedAt() + "," + calendarId);
@@ -92,9 +92,9 @@ public class FileDatabase implements Database {
     }
 
     @Override
-    public boolean updateEntry(UUID id, Entry entry) {
+    public boolean updateEntry(UUID id, Entry entry, UUID calendarId) {
         deleteEntry(id);
-        return save(entry, id);
+        return save(entry, calendarId);
     }
 
     @Override
@@ -193,7 +193,7 @@ public class FileDatabase implements Database {
             for (String line : lines.subList(1, lines.size())) {
                 String[] parts = line.split(",");
                 if (parts[0].equals(id.toString())) {
-                    Calendar calendar = new Calendar(UUID.fromString(parts[0]), parts[1], parts[2], new Entry[0], ZonedDateTime.parse(parts[3]));
+                    Calendar calendar = new Calendar(UUID.fromString(parts[0]), parts[2], parts[1], new Entry[0], ZonedDateTime.parse(parts[3]));
                     List<Entry> entries = new ArrayList<>();
                     List<String> entryLines = Files.readAllLines(databasePath.resolve("entries.csv"));
                     for (String entryLine : entryLines.subList(1, entryLines.size())) {
@@ -235,7 +235,7 @@ public class FileDatabase implements Database {
             List<Calendar> calendars = new ArrayList<>();
             for (String line : lines.subList(1, lines.size())) {
                 String[] parts = line.split(",");
-                Calendar calendar = new Calendar(UUID.fromString(parts[0]), parts[1], parts[2], new Entry[0], ZonedDateTime.parse(parts[3]));
+                Calendar calendar = new Calendar(UUID.fromString(parts[0]), parts[2], parts[1], new Entry[0], ZonedDateTime.parse(parts[3]));
                 List<Entry> entries = new ArrayList<>();
                 List<String> entryLines = Files.readAllLines(databasePath.resolve("entries.csv"));
                 for (String entryLine : entryLines.subList(1, entryLines.size())) {

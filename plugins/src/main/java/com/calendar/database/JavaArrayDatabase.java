@@ -24,7 +24,7 @@ public class JavaArrayDatabase implements Database {
 
     @Override
     public boolean save(Entry entry, UUID calendarId) {
-        deleteEntry(entry.getUuid()); // Entferne vorhandene Einträge mit derselben UUID
+        deleteEntry(entry.getUuid());
         entry = new Entry(
                 entry.getUuid(),
                 entry.getTitle(),
@@ -92,7 +92,7 @@ public class JavaArrayDatabase implements Database {
     }
 
     @Override
-    public boolean updateEntry(UUID id, Entry entry) {
+    public boolean updateEntry(UUID id, Entry entry, UUID calendarId) {
         deleteEntry(id);
         return save(entry, UUID.fromString(entry.getNotes()));
     }
@@ -117,12 +117,6 @@ public class JavaArrayDatabase implements Database {
     public boolean createTables() {
         calendars.clear();
         entries.clear();
-
-        // Initialen Kalender erstellen, falls keiner existiert
-        if (calendars.isEmpty()) {
-            Calendar initialCalendar = new Calendar("Calendar", "Default Calendar");
-            calendars.add(initialCalendar);
-        }
 
         return true;
     }

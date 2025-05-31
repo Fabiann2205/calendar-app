@@ -234,7 +234,7 @@ public class SQLiteDatabase implements Database {
     }
 
     @Override
-    public boolean updateEntry(UUID id, Entry entry) {
+    public boolean updateEntry(UUID id, Entry entry, UUID calendarId) {
         String sql = "UPDATE entries SET title = ?, description = ?, dateAndTime = ?, location = ?, category = ?, priority = ?, status = ?, notes = ?, createdAt = ? WHERE uuid = ?";
 
         try (Connection conn = connect();

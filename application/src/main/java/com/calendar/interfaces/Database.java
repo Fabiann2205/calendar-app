@@ -22,7 +22,7 @@ public interface Database {
 
     boolean deleteCalendar(UUID id);
 
-    boolean updateEntry(UUID id, Entry entry);
+    boolean updateEntry(UUID id, Entry entry, UUID calendarId);
 
     boolean updateCalendar(UUID id, Calendar calendar);
 
