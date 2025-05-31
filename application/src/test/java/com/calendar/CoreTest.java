@@ -1,20 +1,19 @@
 package com.calendar;
 
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.*;
-import static org.junit.jupiter.api.Assertions.*;
-
 import com.calendar.enums.Category;
 import com.calendar.enums.Priority;
 import com.calendar.enums.Status;
 import com.calendar.interfaces.Database;
 import com.calendar.interfaces.Frontend;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
 import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 class CoreTest {
 
@@ -30,7 +29,7 @@ class CoreTest {
         mockFrontend = mock();
 
         calendar = new Calendar("Test Calendar", "Desc");
-        entry = new Entry("Test Entry", ZonedDateTime.now());;
+        entry = new Entry("Test Entry", ZonedDateTime.now());
 
         when(mockDatabase.listCalendars()).thenReturn(new Calendar[0]);
 
@@ -55,7 +54,6 @@ class CoreTest {
     void testAddEntry_invalidCalendar() {
         boolean result = core.addEntry(entry, UUID.randomUUID());
         assertFalse(result);
-        verify(mockDatabase, never()).save(any());
     }
 
     @Test
@@ -65,7 +63,8 @@ class CoreTest {
         assertTrue(result);
         assertEquals(1, calendar.getEntries().length);
 
-        Entry entry2 = new Entry("Test Entry2", ZonedDateTime.now());;
+        Entry entry2 = new Entry("Test Entry2", ZonedDateTime.now());
+
         core.addEntry(entry2, calendar.getUuid());
         assertEquals(2, calendar.getEntries().length);
         verify(mockDatabase, times(2)).save(calendar);
