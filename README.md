@@ -39,3 +39,6 @@
 2. Install the Java Extension Pack if not already installed.
 3. Run the task `calendar-app [Install]` to install the application (from command palette).
 4. There is a launch configuration (`calendar-app [exec:java]`)  for running the application.
+
+## Change Database
+To change the used database, simply uncomment the wanted database in the Main.java (in Runner). Comment out the line of the previous used database.
