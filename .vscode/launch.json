@@ -1,0 +1,23 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "java",
+      "name": "calendar-app [install]",
+      "request": "launch",
+      "mainClass": "",
+      "preLaunchTask": "Maven install",
+      "projectName": "calendar-app"
+    },
+    {
+      "type": "java",
+      "name": "runner [exec:java]",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/runner",
+      "mainClass": "com.calendar.Main",
+      "projectName": "runner",
+      "args": "",
+      "console": "internalConsole"
+    }
+  ]
+}
