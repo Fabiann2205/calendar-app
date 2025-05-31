@@ -3,14 +3,6 @@
   "configurations": [
     {
       "type": "java",
-      "name": "calendar-app [install]",
-      "request": "launch",
-      "mainClass": "",
-      "preLaunchTask": "Maven install",
-      "projectName": "calendar-app"
-    },
-    {
-      "type": "java",
       "name": "runner [exec:java]",
       "request": "launch",
       "cwd": "${workspaceFolder}/runner",
