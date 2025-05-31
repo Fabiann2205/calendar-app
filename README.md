@@ -32,3 +32,10 @@
     - `calendar-app [Install]`: Installs the application.
     - `runner [exec:java]`: Runs the application.
     - Run these configurations in the given order from the UI.
+
+### Using VS Code:
+
+1. Open the project in VS Code.
+2. Install the Java Extension Pack if not already installed.
+3. Run the task `calendar-app [Install]` to install the application (from command palette).
+4. There is a launch configuration (`calendar-app [exec:java]`)  for running the application.
