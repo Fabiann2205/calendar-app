@@ -26,13 +26,12 @@ public class Core implements Observable {
         this.commandExecutor = CommandExecutor.getInstance(this);
         this.frontend.initialize(this.commandExecutor, this);
         this.database.createTables();
-        this.calendars = new ArrayList<>(Arrays.asList(this.database.listCalendars()));
-        notifyObservers();
 
-        // For Testing
-        // this.calendars.add(new Calendar("Test Calendar", "Test Description"));
-        // this.database.save(this.calendars.getFirst());
-        // notifyObservers();
+        this.calendars = new ArrayList<>(Arrays.asList(this.database.listCalendars()));
+        if (this.calendars.isEmpty()) {
+            this.database.save(new Calendar("Default Calendar", "This is the default calendar."));
+        }
+        notifyObservers();
     }
 
     public boolean addEntry(Entry entry, UUID calendarId) {
