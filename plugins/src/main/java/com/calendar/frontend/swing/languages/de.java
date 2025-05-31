@@ -16,7 +16,7 @@ public enum de implements Translation {
     Save("Speichern"),
     Cancel("Abbrechen"),
     Date("Fälligkeitsdatum"),
-    EditTitle("Title"),
+    EditTitle("Titel"),
     DeleteConfirmText("Sicher, dass du den Eintrag löschen willst?"),
     Description("Beschreibung"),
     Location("Standort"),
@@ -24,7 +24,9 @@ public enum de implements Translation {
     Priority("Priorität"),
     Status("Status"),
     Notes("Notizen"),
-    CreationDate("Erstellt am");
+    CreationDate("Erstellt am"),
+    AddCalendar("Neuer Kalender"),
+    Calendar("Kalender");
 
     private final String translation;
 

@@ -6,34 +6,25 @@ import com.calendar.Core;
 import com.calendar.Entry;
 import com.calendar.interfaces.Database;
 import com.calendar.interfaces.Frontend;
-import org.assertj.swing.core.matcher.JButtonMatcher;
-import org.assertj.swing.core.matcher.JTextComponentMatcher;
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager;
 import org.assertj.swing.edt.GuiActionRunner;
-import org.assertj.swing.finder.WindowFinder;
-import org.assertj.swing.fixture.DialogFixture;
 import org.assertj.swing.fixture.FrameFixture;
-import org.junit.jupiter.api.*;
-import org.mockito.Mockito;
-import java.util.List;
-
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import javax.swing.*;
-import java.awt.Robot;
-import java.awt.event.InputEvent;
-
-import static com.calendar.frontend.swing.languages.en.Title;
-import static org.junit.jupiter.api.Assertions.*;
 
 import javax.swing.*;
-
 import java.awt.*;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.time.format.TextStyle;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -47,7 +38,6 @@ public class FrontendMainTest {
     private Core core;
     private Calendar calendar;
     private Entry entry;
-
 
 
     @BeforeAll
@@ -66,7 +56,8 @@ public class FrontendMainTest {
         core = new Core(mockDatabase, mockFrontend);
 
         calendar = new Calendar("Test Calendar", "Desc");
-        entry = new Entry("Test Entry", ZonedDateTime.now());;
+        entry = new Entry("Test Entry", ZonedDateTime.now());
+        ;
 
         // Arrange: Frontend im EDT erstellen
         frontend = GuiActionRunner.execute(() -> {
@@ -128,7 +119,7 @@ public class FrontendMainTest {
     }
 
     private List<String> getWeekdayLabelsFromCalendar() {
-        return java.util.Arrays.stream(frontend.calendarPanel.getComponents())
+        return java.util.Arrays.stream(frontend.calendarPanels.get(0).getComponents())
                 .filter(JLabel.class::isInstance)
                 .map(c -> ((JLabel) c).getText())
                 .toList();

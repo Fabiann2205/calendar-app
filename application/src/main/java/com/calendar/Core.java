@@ -29,8 +29,9 @@ public class Core implements Observable {
 
         this.calendars = new ArrayList<>(Arrays.asList(this.database.listCalendars()));
         if (this.calendars.isEmpty()) {
-            this.database.save(new Calendar("Default Calendar", "This is the default calendar."));
+            this.database.save(new Calendar("Private", "Private Calendar"));
         }
+        this.calendars = new ArrayList<>(Arrays.asList(this.database.listCalendars()));
         notifyObservers();
     }
 
@@ -106,5 +107,12 @@ public class Core implements Observable {
         for (Observer observer : this.observers) {
             observer.update(current_calendars);
         }
+    }
+
+    public boolean saveCalendar(Calendar calendar) {
+        boolean result = database.save(calendar);
+        this.calendars = new ArrayList<>(Arrays.asList(this.database.listCalendars()));
+        notifyObservers();
+        return result;
     }
 }

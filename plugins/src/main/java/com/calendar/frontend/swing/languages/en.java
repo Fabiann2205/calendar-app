@@ -24,7 +24,9 @@ public enum en implements Translation {
     Priority("Priority"),
     Status("Status"),
     Notes("Notes"),
-    CreationDate("Created on");
+    CreationDate("Created on"),
+    AddCalendar("Add Calendar"),
+    Calendar("Calendar");
     private final String translation;
 
     en(String translation) {

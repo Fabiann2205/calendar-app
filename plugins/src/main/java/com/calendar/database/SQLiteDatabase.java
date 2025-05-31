@@ -160,8 +160,8 @@ public class SQLiteDatabase implements Database {
             if (rs.next()) {
                 Calendar calendar = new Calendar(
                         UUID.fromString(rs.getString("uuid")),
-                        rs.getString("name"),
                         rs.getString("description"),
+                        rs.getString("name"),
                         new Entry[0],
                         ZonedDateTime.parse(rs.getString("createdAt"))
                 );
@@ -342,8 +342,8 @@ public class SQLiteDatabase implements Database {
             while (rs.next()) {
                 Calendar calendar = new Calendar(
                         UUID.fromString(rs.getString("uuid")),
-                        rs.getString("name"),
                         rs.getString("description"),
+                        rs.getString("name"),
                         new Entry[0],
                         ZonedDateTime.parse(rs.getString("createdAt"))
                 );

@@ -14,8 +14,5 @@ public class Main {
 
         // use JavaArrayDatabase as database
         //Core core = new Core(new JavaArrayDatabase(), new FrontendMain("de"));
-
-        // use file as database !!! Currently doesnt read entries?! !!! NOT RECOMMENDED!
-        // Core core = new Core(new FileDatabase("resources/filedb"), new FrontendMain("de"));
     }
 }

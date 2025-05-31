@@ -4,6 +4,7 @@ import com.calendar.Calendar;
 import com.calendar.CommandExecutor;
 import com.calendar.Core;
 import com.calendar.Entry;
+import com.calendar.commands.AddCalendarCommand;
 import com.calendar.commands.AddEntryCommand;
 import com.calendar.commands.DeleteEntryCommand;
 import com.calendar.commands.EditEntryCommand;
@@ -47,9 +48,10 @@ final public class FrontendMain implements Frontend {
     JFrame frame;
     JButton todayButton;
     JLabel monthLabel;
-    JPanel calendarPanel[];
+    List<JPanel> calendarPanels = new ArrayList<>(List.of(new JPanel()));
     private JTextArea entryTextArea;
     JPanel entryPanel;
+    private JButton addCalendarButton;
 
     JButton createButton;
     JButton editButton;
@@ -93,10 +95,31 @@ final public class FrontendMain implements Frontend {
         languageComboBox.setSelectedItem(this.language.equals("de") ? "Deutsch" : "English");
 
         // Dropdown für Kalenderauswahl
-        String[] calendar = {"Privat", "Arbeit"};
+        String[] calendar = {"Private"};
         calendarComboBox = new JComboBox<>(calendar);
         calendarComboBox.setSelectedItem(calendar[0]);
-        calendarPanel = new JPanel[calendar.length];
+        calendarPanels = new ArrayList<>();
+        addCalendarButton = new JButton(getTranslation("AddCalendar", "Add Calendar"));
+        addCalendarButton.addActionListener(e -> {
+            JTextField nameField = new JTextField();
+            JTextField descField = new JTextField();
+            Object[] message = {
+                    getTranslation("EditTitle", "Title") + ":", nameField,
+                    getTranslation("Description", "Description") + ":", descField
+            };
+            int option = JOptionPane.showConfirmDialog(frame, message, getTranslation("CreateCalendar", "Create Calendar"), JOptionPane.OK_CANCEL_OPTION);
+            if (option == JOptionPane.OK_OPTION) {
+                String name = nameField.getText();
+                String desc = descField.getText();
+                if (!name.isBlank()) {
+                    Calendar newCal = new Calendar(name, desc);
+                    CommandExecutor.getInstance().addCommand(new AddCalendarCommand(newCal));
+                    CommandExecutor.getInstance().executeCommands();
+                } else {
+                    JOptionPane.showMessageDialog(frame, getTranslation("CalendarNameRequired", "Calendar name required"), "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
 
         headerPanel.add(prevButton);
         headerPanel.add(this.monthLabel);
@@ -104,13 +127,14 @@ final public class FrontendMain implements Frontend {
         headerPanel.add(nextButton);
         headerPanel.add(languageComboBox);
         headerPanel.add(calendarComboBox);
+        headerPanel.add(addCalendarButton);
 
         panel.add(headerPanel);
 
         // Für jeden Kalender ein Panel erstellen
-        for (int i = 0; i < calendar.length; i++) {
-            calendarPanel[i] = new JPanel();
-            calendarPanel[i].add(new JLabel("Inhalt für Kalender: " + calendar[i]));
+        for (int i = 1; i < calendar.length; i++) {
+            calendarPanels.set(i, new JPanel());
+            calendarPanels.get(i).add(new JLabel("Inhalt für Kalender: " + calendar[i]));
         }
 
         getCurrentCalendarPanel().setLayout(new GridLayout(7, 7)); // 7 Tage pro Woche, 7 Zeilen (1 für den Monat, 1 für die Wochentage)
@@ -157,12 +181,12 @@ final public class FrontendMain implements Frontend {
         // Action Listener für die Buttons
         prevButton.addActionListener(e -> {
             currentDate = currentDate.minusMonths(1);
-            updateCalendar(getCurrentCalendarPanel() );
+            updateCalendar(getCurrentCalendarPanel());
         });
 
         nextButton.addActionListener(e -> {
             currentDate = currentDate.plusMonths(1);
-            updateCalendar(getCurrentCalendarPanel() );
+            updateCalendar(getCurrentCalendarPanel());
         });
 
         this.todayButton.addActionListener(e -> {
@@ -176,11 +200,11 @@ final public class FrontendMain implements Frontend {
             this.translations = loadTranslations(); // Re-lade Übersetzungen
             setLanguage(this.language);
 
-            updateCalendar(getCurrentCalendarPanel() );     // Re-render Kalender
+            updateCalendar(getCurrentCalendarPanel());     // Re-render Kalender
         });
 
         calendarComboBox.addActionListener(e -> {
-            updateCalendar(getCurrentCalendarPanel() );     // Re-render Kalender
+            updateCalendar(getCurrentCalendarPanel());     // Re-render Kalender
 
         });
 
@@ -189,12 +213,20 @@ final public class FrontendMain implements Frontend {
         this.frame.add(panel);
         this.frame.setVisible(true);
     }
-    private JPanel getCurrentCalendarPanel(){
-        return calendarPanel[calendarComboBox.getSelectedIndex()];
+
+    private JPanel getCurrentCalendarPanel() {
+        int idx = calendarComboBox.getSelectedIndex();
+        if (idx >= 0 && idx < calendarPanels.size()) {
+            return calendarPanels.get(idx);
+        }
+        // Fallback, falls kein Panel existiert
+        JPanel fallback = new JPanel();
+        calendarPanels.add(fallback);
+        return fallback;
     }
 
     private void showDeleteConfirmationPopup(Entry entry) {
-        JDialog dialog = new JDialog(frame, getTranslation("Delete","Delete"), true);
+        JDialog dialog = new JDialog(frame, getTranslation("Delete", "Delete"), true);
         dialog.setSize(300, 150);
         dialog.setLayout(new BorderLayout());
 
@@ -301,7 +333,17 @@ final public class FrontendMain implements Frontend {
                 LocalDateTime localDateTime = LocalDateTime.parse(dateField.getText(), formatter);
                 ZonedDateTime zonedDateTime = localDateTime.atZone(ZoneId.systemDefault());
                 if ("Erstellen".equals(action)) {
-                    UUID calendarId = this.calendars.getFirst().getUuid();
+                    String selectedCalendarName = (String) calendarComboBox.getSelectedItem();
+                    UUID calendarId = null;
+                    for (Calendar calendar : this.calendars) {
+                        if (calendar.getName().equals(selectedCalendarName)) {
+                            calendarId = calendar.getUuid();
+                            break;
+                        }
+                    }
+                    if (calendarId == null) {
+                        throw new IllegalStateException("Kein Kalender mit dem Namen " + selectedCalendarName + " gefunden.");
+                    }
 
                     Entry newEntry = new Entry(
                             titleField.getText(),
@@ -398,17 +440,18 @@ final public class FrontendMain implements Frontend {
                     };
 
                     // Felder hinzufügen (nur wenn belegt)
-                    addField.accept(getTranslation("EditTitle","Titel"), entry.getTitle());
-                    addField.accept(getTranslation("Description","Beschreibung"), entry.getDescription());
-                    addField.accept(getTranslation("Date","Fälligkeitsdatum"), entry.getDateAndTime().toLocalTime().toString());
-                    addField.accept(getTranslation("Location","Ort"), entry.getLocation());
-                    addField.accept(getTranslation("Category","Kategorie"), String.valueOf(entry.getCategory()));
-                    addField.accept(getTranslation("Priority","Priorität"), String.valueOf(entry.getPriority()));
-                    addField.accept(getTranslation("Status","Status"), String.valueOf(entry.getStatus()));
-                    addField.accept(getTranslation("Notes","Notizen"), entry.getNotes());
+                    addField.accept(getTranslation("EditTitle", "Titel"), entry.getTitle());
+                    addField.accept(getTranslation("Description", "Beschreibung"), entry.getDescription());
+                    addField.accept(getTranslation("Date", "Fälligkeitsdatum"), entry.getDateAndTime().toLocalTime().toString());
+                    addField.accept(getTranslation("Location", "Ort"), entry.getLocation());
+                    addField.accept(getTranslation("Category", "Kategorie"), String.valueOf(entry.getCategory()));
+                    addField.accept(getTranslation("Priority", "Priorität"), String.valueOf(entry.getPriority()));
+                    addField.accept(getTranslation("Status", "Status"), String.valueOf(entry.getStatus()));
+                    addField.accept(getTranslation("Notes", "Notizen"), entry.getNotes());
+                    addField.accept(getTranslation("Calendar", "Calendar"), calendar.getName());
 
                     if (entry.getCreatedAt() != null) {
-                        addField.accept(getTranslation("CreationDate","Erstellt am"), entry.getCreatedAt().toLocalDateTime().format(formatter));
+                        addField.accept(getTranslation("CreationDate", "Erstellt am"), entry.getCreatedAt().toLocalDateTime().format(formatter));
                     }
 
 
@@ -422,7 +465,6 @@ final public class FrontendMain implements Frontend {
 
         entryPanel.revalidate();
         entryPanel.repaint();
-
 
 
         // Aktualisiere die Kalenderansicht, um die Markierung zu aktualisieren
@@ -445,6 +487,7 @@ final public class FrontendMain implements Frontend {
         this.editButton.setText(getTranslation("Edit", "Edit"));
         this.deleteButton.setText(getTranslation("Delete", "Delete"));
         this.frame.setTitle(getTranslation("Title", "Calendar App"));
+        this.addCalendarButton.setText(getTranslation("AddCalendar", "Add Calendar"));
 
         this.updateCalendar(getCurrentCalendarPanel());
     }
@@ -543,10 +586,23 @@ final public class FrontendMain implements Frontend {
     public void update(Calendar[] calendars) {
         if (calendars == null) {
             logger.log(Level.WARNING, "Received null calendars array in update method.");
-            this.calendars = new ArrayList<>(); // Leere Liste initialisieren
+            this.calendars = new ArrayList<>();
         } else {
             this.calendars = new ArrayList<>(Arrays.asList(calendars));
         }
+
+        String previousSelection = (String) calendarComboBox.getSelectedItem();
+        calendarComboBox.removeAllItems();
+        calendarPanels.clear();
+        for (Calendar cal : this.calendars) {
+            calendarComboBox.addItem(cal.getName());
+            JPanel panel = new JPanel();
+            calendarPanels.add(panel);
+        }
+        if (previousSelection != null) {
+            calendarComboBox.setSelectedItem(previousSelection);
+        }
+
         updateCalendar(getCurrentCalendarPanel());
     }
 
