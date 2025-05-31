@@ -47,14 +47,14 @@ final public class FrontendMain implements Frontend {
     JFrame frame;
     JButton todayButton;
     JLabel monthLabel;
-    JPanel calendarPanel;
+    JPanel calendarPanel[];
     private JTextArea entryTextArea;
     JPanel entryPanel;
 
     JButton createButton;
     JButton editButton;
     JButton deleteButton;
-
+    private JComboBox<String> calendarComboBox;
     private List<JCheckBox> entryCheckBoxes;
 
     /**
@@ -92,17 +92,29 @@ final public class FrontendMain implements Frontend {
         JComboBox<String> languageComboBox = new JComboBox<>(languages);
         languageComboBox.setSelectedItem(this.language.equals("de") ? "Deutsch" : "English");
 
+        // Dropdown für Kalenderauswahl
+        String[] calendar = {"Privat", "Arbeit"};
+        calendarComboBox = new JComboBox<>(calendar);
+        calendarComboBox.setSelectedItem(calendar[0]);
+        calendarPanel = new JPanel[calendar.length];
+
         headerPanel.add(prevButton);
         headerPanel.add(this.monthLabel);
         headerPanel.add(this.todayButton);
         headerPanel.add(nextButton);
         headerPanel.add(languageComboBox);
+        headerPanel.add(calendarComboBox);
 
         panel.add(headerPanel);
 
-        calendarPanel = new JPanel();
-        calendarPanel.setLayout(new GridLayout(7, 7)); // 7 Tage pro Woche, 7 Zeilen (1 für den Monat, 1 für die Wochentage)
-        panel.add(calendarPanel);
+        // Für jeden Kalender ein Panel erstellen
+        for (int i = 0; i < calendar.length; i++) {
+            calendarPanel[i] = new JPanel();
+            calendarPanel[i].add(new JLabel("Inhalt für Kalender: " + calendar[i]));
+        }
+
+        getCurrentCalendarPanel().setLayout(new GridLayout(7, 7)); // 7 Tage pro Woche, 7 Zeilen (1 für den Monat, 1 für die Wochentage)
+        panel.add(getCurrentCalendarPanel());
 
         entryPanel = new JPanel();
         entryPanel.setLayout(new BoxLayout(entryPanel, BoxLayout.Y_AXIS));
@@ -145,17 +157,17 @@ final public class FrontendMain implements Frontend {
         // Action Listener für die Buttons
         prevButton.addActionListener(e -> {
             currentDate = currentDate.minusMonths(1);
-            updateCalendar(calendarPanel);
+            updateCalendar(getCurrentCalendarPanel() );
         });
 
         nextButton.addActionListener(e -> {
             currentDate = currentDate.plusMonths(1);
-            updateCalendar(calendarPanel);
+            updateCalendar(getCurrentCalendarPanel() );
         });
 
         this.todayButton.addActionListener(e -> {
             currentDate = ZonedDateTime.now(); // Setzt das aktuelle Datum
-            updateCalendar(calendarPanel);
+            updateCalendar(getCurrentCalendarPanel());
         });
 
         languageComboBox.addActionListener(e -> {
@@ -164,18 +176,22 @@ final public class FrontendMain implements Frontend {
             this.translations = loadTranslations(); // Re-lade Übersetzungen
             setLanguage(this.language);
 
-            updateCalendar(this.calendarPanel);     // Re-render Kalender
+            updateCalendar(getCurrentCalendarPanel() );     // Re-render Kalender
+        });
 
+        calendarComboBox.addActionListener(e -> {
+            updateCalendar(getCurrentCalendarPanel() );     // Re-render Kalender
 
         });
 
-
-        updateCalendar(calendarPanel);
+        updateCalendar(getCurrentCalendarPanel());
 
         this.frame.add(panel);
         this.frame.setVisible(true);
     }
-
+    private JPanel getCurrentCalendarPanel(){
+        return calendarPanel[calendarComboBox.getSelectedIndex()];
+    }
 
     private void showDeleteConfirmationPopup(Entry entry) {
         JDialog dialog = new JDialog(frame, getTranslation("Delete","Delete"), true);
@@ -410,7 +426,7 @@ final public class FrontendMain implements Frontend {
 
 
         // Aktualisiere die Kalenderansicht, um die Markierung zu aktualisieren
-        updateCalendar(calendarPanel);
+        updateCalendar(getCurrentCalendarPanel());
     }
 
     /**
@@ -430,7 +446,7 @@ final public class FrontendMain implements Frontend {
         this.deleteButton.setText(getTranslation("Delete", "Delete"));
         this.frame.setTitle(getTranslation("Title", "Calendar App"));
 
-        this.updateCalendar(this.calendarPanel);
+        this.updateCalendar(getCurrentCalendarPanel());
     }
 
     /**
@@ -531,7 +547,7 @@ final public class FrontendMain implements Frontend {
         } else {
             this.calendars = new ArrayList<>(Arrays.asList(calendars));
         }
-        updateCalendar(this.calendarPanel);
+        updateCalendar(getCurrentCalendarPanel());
     }
 
 
