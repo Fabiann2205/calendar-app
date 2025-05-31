@@ -25,7 +25,6 @@ public class FileDatabase implements Database {
 
     public FileDatabase(String directory) {
         this.databasePath = Paths.get(directory);
-        createTables();
     }
 
     @Override

@@ -20,7 +20,6 @@ public class SQLiteDatabase implements Database {
 
     public SQLiteDatabase(String url) {
         this.url = url;
-        createTables();
     }
 
     private Connection connect() throws SQLException {
